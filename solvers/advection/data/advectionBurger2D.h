@@ -24,35 +24,38 @@ SOFTWARE.
 
 */
 
-#include "advection.hpp"
+#define ADVECTION_SPEED_X 1.0
+#define ADVECTION_SPEED_Y 0.0
 
-void advection_t::Report(dfloat time, int tstep){
+// Flux function
+#define advectionFlux2D(t, x, y, q, cx, cy) \
+{                                       \
+  *(cx) = 0.5*q*q;          \
+  *(cy) = 0.0;              \
+}
 
-  static int frame=0;
+// max wavespeed (should be max eigen of Jacobian of flux function)
+#define advectionMaxWaveSpeed2D(t, x, y, q, u, v) \
+{                                                 \
+  *(u) = 1.0;                                    \
+  *(v) = 0.0;                                     \
+}
 
-  //compute q.M*q
-  mesh.MassMatrixApply(o_q, o_Mq);
+// Boundary conditions
+/* wall 1, outflow 2 */
+#define advectionDirichletConditions2D(bc, t, x, y, nx, ny, qM, qB) \
+{                                       \
+  if(bc==1){                            \
+    *(qB) = 0.0;                        \
+  } else if(bc==2){                     \
+    *(qB) = qM;                         \
+  }                                     \
+}
 
-  dlong Nentries = mesh.Nelements*mesh.Np;
-  dfloat norm2 = sqrt(platform.linAlg.innerProd(Nentries, o_q, o_Mq, mesh.comm));
-
-  if(mesh.rank==0)
-    printf("%5.2f (%d), %5.2f (time, timestep, norm)\n", time, tstep, norm2);
-
-  if (settings.compareSetting("OUTPUT TO FILE","TRUE")) {
-
-    // copy data back to host
-    o_q.copyTo(q);
-
-    // output field files
-    string name;
-    settings.getSetting("OUTPUT FILE NAME", name);
-    char fname[BUFSIZ];
-    sprintf(fname, "%s_%04d_%04d.vtu", name.c_str(), mesh.rank, frame++);
-
-    PlotFields(q, fname);
-
-    sprintf(fname, "%s_%04d.dat", name.c_str(), frame-1);
-    WriteField(q, fname);
-  }
+// Initial conditions
+// *(q) = exp(-1.0*(x*x));             
+//*(q) = (x<0) ?  0.75 : 0.25 ;         
+#define advectionInitialConditions2D(t, x, y, q) \
+{                                       \
+  *(q) = exp(-1.0*x*x);                 \
 }

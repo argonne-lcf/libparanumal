@@ -79,6 +79,7 @@ public:
   void Report(dfloat time, int tstep);
 
   void PlotFields(dfloat* Q, char *fileName);
+  void WriteField(dfloat* Q, char *fileName);
 
   void rhsf(occa::memory& o_q, occa::memory& o_rhs, const dfloat time);
 

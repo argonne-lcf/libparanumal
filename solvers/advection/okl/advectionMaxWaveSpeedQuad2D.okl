@@ -60,6 +60,7 @@ SOFTWARE.
 
         dfloat u=0.0, v=0.0;
         advectionMaxWaveSpeed2D(time, x[id], y[id], qn, &u, &v);
+        u = qn;   // Burgers
         dfloat c=sqrt(u*u + v*v);
 
         s_maxSpeed[i] = (c > s_maxSpeed[i]) ? c : s_maxSpeed[i];
@@ -90,6 +91,7 @@ SOFTWARE.
           //determine max wavespeed from boundary value
           dfloat u=0.0, v=0.0;
           advectionMaxWaveSpeed2D(time, x[idM], y[idM], qB, &u, &v);
+          u = qP;   // Burgers
           dfloat c=sqrt(u*u + v*v);
 
           s_maxSpeed[i] = (c > s_maxSpeed[i]) ? c : s_maxSpeed[i];

@@ -70,11 +70,56 @@ void surfaceTerms(const int e,
   advectionMaxWaveSpeed2D(t, x[idM], y[idM], qM, &uM, &vM);
   advectionMaxWaveSpeed2D(t, x[idM], y[idM], qP, &uP, &vP);
 
+  // Burgers equations
+  uM = qM;
+  uP = qP;
+
   const dfloat unM   = fabs(nx*uM + ny*vM);
   const dfloat unP   = fabs(nx*uP + ny*vP);
   const dfloat unMax = (unM > unP) ? unM : unP;
 
-  s_qflux[es][j][i] += 0.5*invWJ*sJ*(ndotcM+ndotcP-unMax*(qP-qM));
+  // Lax-Friedrichs
+  dfloat f_LF = 0.5*invWJ*sJ*(ndotcM+ndotcP-unMax*(qP-qM));
+
+  // Richtmeyer
+  //dfloat uR = 0.5*(qM + qP - (ndotcP-ndotcM)/(unMax+1.0e-16));
+  dfloat uR = 0.5*(qM + qP - t*(ndotcP-ndotcM)*(10.0/40));
+  dfloat f_RM = invWJ*sJ*(0.5*uR*uR);
+
+  // FORCE
+  dfloat f_FC = 0.5*(f_LF+f_RM);
+
+  // Enquist-Osher flux
+  dfloat fluxintegral = 0.0;
+  if(uP>0) {
+     fluxintegral +=  0.5*uP*uP;
+  } else {
+     fluxintegral += -0.5*uP*uP;
+  }
+  if(uM>0) {
+     fluxintegral -=  0.5*uM*uM;
+  } else {
+     fluxintegral -= -0.5*uM*uM;
+  }
+  dfloat f_EO = 0.5*invWJ*sJ*(ndotcM+ndotcP-fluxintegral);
+
+  // HLL Flux
+  dfloat sM = (unM < unP) ? unM : unP;
+  dfloat sP = (unM > unP) ? unM : unP;
+
+  dfloat f_HLL = 0.0;
+  if(sM >= 0.0)    { f_HLL = ndotcM; }
+  else if(sP<=0.0) { f_HLL = ndotcP; }
+  // else if(sP>=0.0) { f_HLL = (sP*ndotcM - sM*ndotcP + sM*sP*(qP-qM)) / (sP-sM+1.0e-10); }
+  else if(sP>=0.0) {
+    if(sP==sM) { f_HLL = 0.0; }
+    else       { f_HLL = (sP*ndotcM - sM*ndotcP + sM*sP*(qP-qM)) / (sP-sM); }
+  }
+
+  // =================================================================>
+  s_qflux[es][j][i] += f_LF;
+  // =================================================================>
+
 }
 
 // batch process elements
