@@ -11,7 +11,6 @@
 .DS_STORE
 *.vtu
 *.dat
-*.txt
 *.eps
 *.png
 *.pdf
@@ -35,3 +34,4 @@ test/__pycache__
 
 .vimrc
 .occa/
+.vscode
