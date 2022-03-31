@@ -46,9 +46,6 @@ saab3::saab3(dlong _Nelements, dlong _NhaloElements,
   lambda = (dfloat *) malloc(Nfields*sizeof(dfloat));
   memcpy(lambda, _lambda, Nfields*sizeof(dfloat));
 
-  Nstages = 3;
-  shiftIndex = 0;
-
   o_rhsq = platform.malloc(Nstages*N*sizeof(dfloat));
 
   occa::properties kernelInfo = platform.props; //copy base occa properties from solver

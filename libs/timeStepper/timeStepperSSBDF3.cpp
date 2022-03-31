@@ -36,9 +36,6 @@ ssbdf3::ssbdf3(dlong Nelements, dlong NhaloElements,
 
   platform_t &platform = solver.platform;
 
-  Nstages = 3;
-  shiftIndex = 0;
-
   o_qn   = platform.malloc(Nstages*N*sizeof(dfloat)); //q history
   o_qhat = platform.malloc(Nstages*N*sizeof(dfloat)); //F(q) history (explicit part)
   o_rhs  = platform.malloc(N*sizeof(dfloat)); //rhs storage

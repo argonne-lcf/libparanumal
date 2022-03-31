@@ -45,8 +45,6 @@ mrsaab3::mrsaab3(dlong _Nelements, dlong _NhaloElements,
   lambda = (dfloat *) malloc(Nfields*sizeof(dfloat));
   memcpy(lambda, _lambda, Nfields*sizeof(dfloat));
 
-  Nstages = 3;
-
   dfloat *rhsq0 = (dfloat*) calloc(N, sizeof(dfloat));
   o_rhsq0 = platform.malloc(N*sizeof(dfloat), rhsq0);
   free(rhsq0);

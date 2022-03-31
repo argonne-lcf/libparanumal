@@ -171,6 +171,7 @@ void linAlg_t::InitKernels(vector<string> kernels) {
 }
 
 linAlg_t::~linAlg_t() {
+  //check if these are needed, since OCCA handles garbage collection
   setKernel.free();
   addKernel.free();
   scaleKernel.free();

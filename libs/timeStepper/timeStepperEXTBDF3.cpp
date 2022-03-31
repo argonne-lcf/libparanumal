@@ -36,9 +36,6 @@ extbdf3::extbdf3(dlong Nelements, dlong NhaloElements,
 
   platform_t &platform = solver.platform;
 
-  Nstages = 3;
-  shiftIndex = 0;
-
   dfloat *qn = (dfloat *) calloc(Nstages*N,sizeof(dfloat));
   o_qn = platform.malloc(Nstages*N*sizeof(dfloat),qn); //q history
 

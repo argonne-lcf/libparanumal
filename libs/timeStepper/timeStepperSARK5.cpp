@@ -48,10 +48,6 @@ sark5::sark5(dlong _Nelements, dlong _NhaloElements,
   lambda = (dfloat *) malloc(Nfields*sizeof(dfloat));
   memcpy(lambda, _lambda, Nfields*sizeof(dfloat));
 
-  Nrk = 7; //number of stages
-  order = 5;
-  embeddedOrder = 4;
-
   dlong Nlocal = Nelements*Np*Nfields;
   dlong Ntotal = (Nelements+NhaloElements)*Np*Nfields;
 

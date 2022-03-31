@@ -60,9 +60,9 @@ public:
 /* Adams Bashforth, order 3 */
 class ab3: public timeStepper_t {
 protected:
-  int Nstages;
-  int shiftIndex;
-
+  static constexpr int Nstages{3};
+  int shiftIndex{0};
+  
   dfloat *ab_a;
   occa::memory o_ab_a;
 
@@ -163,8 +163,8 @@ public:
 /* Semi-Analytic Adams-Bashforth, order 3 */
 class saab3: public timeStepper_t {
 protected:
-  int Nstages;
-  int shiftIndex;
+  static constexpr int Nstages{3};
+  int shiftIndex{0};
 
   int Np, Nfields;
   dlong Nblock, Nelements, NhaloElements;
@@ -196,9 +196,11 @@ public:
 class sark4: public timeStepper_t {
 protected:
   MPI_Comm comm;
-  int Nrk;
-  int order, embeddedOrder;
-
+  
+  static constexpr int Nrk{5};
+  static constexpr int order{4}; 
+  static constexpr int embeddedOrder{3};
+  
   int Np, Nfields;
   dlong Nblock, Nelements, NhaloElements;
 
@@ -263,9 +265,10 @@ public:
 class sark5: public timeStepper_t {
 protected:
   MPI_Comm comm;
-  int Nrk;
-  int order, embeddedOrder;
-
+  static constexpr int Nrk{7}; //number of stages
+  static constexpr int order{5}; 
+  static constexpr int embeddedOrder{4};
+  
   int Np, Nfields;
   dlong Nblock, Nelements, NhaloElements;
 
@@ -329,8 +332,8 @@ public:
 /* Backward Difference Formula, order 3, with extrapolation */
 class extbdf3: public timeStepper_t {
 protected:
-  int Nstages;
-  int shiftIndex;
+  static constexpr int Nstages{3};
+  int shiftIndex{0};
 
   dfloat *extbdf_a;
   dfloat *extbdf_b;
@@ -358,9 +361,9 @@ public:
 /* Backward Difference Formula, order 3, with subcycling */
 class ssbdf3: public timeStepper_t {
 protected:
-  int Nstages;
-  int shiftIndex;
-
+  static constexpr int Nstages{3};
+  int shiftIndex{0};
+  
   dfloat *ssbdf_b;
   occa::memory o_ssbdf_b;
 
@@ -387,7 +390,7 @@ class mrab3: public timeStepper_t {
 protected:
   mesh_t &mesh;
 
-  int Nstages;
+  static constexpr int Nstages{3};
   int Nlevels;
   int Nfields;
 
@@ -421,7 +424,7 @@ class mrsaab3: public timeStepper_t {
 protected:
   mesh_t &mesh;
 
-  int Nstages;
+  static constexpr int Nstages{3};
   int Nlevels;
   int Nfields;
 

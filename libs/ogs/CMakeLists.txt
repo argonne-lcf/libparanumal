@@ -14,7 +14,7 @@ set(ogslib-src
   ogsSetup.cpp
 )
 
-add_library(ogs SHARED ${ogslib-src})
+add_library(ogs STATIC ${ogslib-src})
 
 target_include_directories(ogs 
   PUBLIC
@@ -22,8 +22,8 @@ target_include_directories(ogs
     $<INSTALL_INTERFACE:include> 
 )
 
-target_link_libraries(ogs PUBLIC MPI::MPI_C OCCA::libocca gs)
-set_target_properties(ogs PROPERTIES PUBLIC_HEADER ogs.hpp)
+target_link_libraries(ogs PUBLIC OCCA::libocca gs MPI::MPI_CXX)
+set_target_properties(ogs PROPERTIES PUBLIC_HEADER ${CMAKE_SOURCE_DIR}/include/ogs.hpp)
 
 target_compile_definitions(ogs 
   PUBLIC 
@@ -32,8 +32,5 @@ target_compile_definitions(ogs
     "OGS_DIR=\"${CMAKE_INSTALL_PREFIX}\""
 )
 
-install(TARGETS ogs 
-  LIBRARY DESTINATION lib
-  PUBLIC_HEADER DESTINATION include
-)
+install(TARGETS ogs)
 install(DIRECTORY okl/ DESTINATION okl)

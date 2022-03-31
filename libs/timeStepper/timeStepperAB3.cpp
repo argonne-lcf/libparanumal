@@ -36,9 +36,6 @@ ab3::ab3(dlong Nelements, dlong NhaloElements,
 
   platform_t &platform = solver.platform;
 
-  Nstages = 3;
-  shiftIndex = 0;
-
   o_rhsq = platform.malloc(Nstages*N*sizeof(dfloat));
 
   occa::properties kernelInfo = platform.props; //copy base occa properties from solver

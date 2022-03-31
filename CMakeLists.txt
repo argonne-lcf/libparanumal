@@ -42,3 +42,6 @@ add_compile_definitions(
 
 add_subdirectory(3rdParty)
 add_subdirectory(libs)
+
+install(DIRECTORY include/ DESTINATION include)
+install(DIRECTORY meshes/ DESTINATION meshes)

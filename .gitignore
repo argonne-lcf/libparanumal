@@ -35,3 +35,6 @@ test/__pycache__
 .vimrc
 .occa/
 .vscode
+
+build
+install

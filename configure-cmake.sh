@@ -30,3 +30,7 @@ cmake -S . -B ${BUILD_DIR} \
   -DMPI_C_COMPILER=${MPICC} \
   -DMPI_CXX_COMPILER=${MPICXX} \
   -DEXTERNAL_OCCA=${EXTERNAL_OCCA}
+
+
+#cmake --build ${BUILD_DIR} --parallel 8
+#cmake --install ${BUILD_DIR} --prefix ${INSTALL_DIR}

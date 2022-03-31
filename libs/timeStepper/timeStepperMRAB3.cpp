@@ -38,8 +38,6 @@ mrab3::mrab3(dlong Nelements, dlong NhaloElements,
 
   platform_t &platform = solver.platform;
 
-  Nstages = 3;
-
   dfloat *rhsq0 = (dfloat*) calloc(N, sizeof(dfloat));
   o_rhsq0 = platform.malloc(N*sizeof(dfloat), rhsq0);
   free(rhsq0);
