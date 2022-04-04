@@ -79,4 +79,18 @@ void advection_t::rhsf(occa::memory& o_Q, occa::memory& o_RHS, const dfloat T){
                 mesh.o_z,
                 o_Q,
                 o_RHS);
+
+  // Experimental - flux limiters
+  fluxLimitersKernel(mesh.Nelements,
+		     mesh.o_sgeo,
+		     mesh.o_vmapM,
+		     mesh.o_vmapP,
+		     mesh.o_EToB,
+		     mesh.o_x,
+		     mesh.o_y,
+		     mesh.o_z,
+		     o_Q,
+		     o_qfl,
+		     o_gllw,
+		     o_RHS);
 }

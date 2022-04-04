@@ -123,6 +123,27 @@ advection_t& advection_t::Setup(platform_t& platform, mesh_t& mesh,
 
   advection->maxWaveSpeedKernel = platform.buildKernel(fileName, kernelName, kernelInfo);
 
+  //==================================================================>
+  // Additional variables for flux limiters
+  // Experimental flux limiters - Umesh Unnikrishnan
+  dlong Ncells = mesh.Nelements;
+  advection->o_qfl = platform.malloc((Ncells)*sizeof(dfloat));
+
+  // GLL weights
+  int Nqnodes = mesh.Np;
+  kernelInfo["defines/" "p_Nq"]= Nqnodes;
+  advection->o_gllw = platform.malloc((Nqnodes*sizeof(dfloat),mesh->w));
+
+  // element-to-element connectivity
+  int Nfaces = mesh.Nfaces;
+  advection->o_EToE = platform.malloc((Ncells*Nfaces*sizeof(dlong),mesh->EToE));
+
+  sprintf(fileName, DADVECTION "/okl/advectionFluxLimiters%s.okl", suffix);
+  sprintf(kernelName, "advectionFluxLimiters%s", suffix);
+
+  advection->fluxLimitersKernel = platform.buildKernel(fileName, kernelName, kernelInfo);
+  //==================================================================>
+
   return *advection;
 }
 
@@ -131,6 +152,9 @@ advection_t::~advection_t() {
   surfaceKernel.free();
   initialConditionKernel.free();
   maxWaveSpeedKernel.free();
+
+  // Experimental flux limiters
+  fluxLimitersKernel.free();
 
   if (timeStepper) delete timeStepper;
   if (traceHalo) traceHalo->Free();

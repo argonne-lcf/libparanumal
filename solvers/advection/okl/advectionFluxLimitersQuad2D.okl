@@ -24,6 +24,20 @@ SOFTWARE.
 
 */
 
+dfloat minmodLim( dfloat a, dfloat b, dfloat c ) {
+  int s = 0;
+  dfloat m = 0.0;
+  if((a>0.0)&&(b>0.0)&&(c>0.0)) {
+    s = 1;
+  }
+  else if((a<0.0)&&(b<0.0)&&(c<0.0)) {
+    s = -1;
+  }
+
+  if(s!=0) m = s*std::min({std::abs(a),std::abs(b),std::abs(c)});
+
+  return s;
+}
 
 @kernel void advectionFluxLimitersQuad2D (const dlong Nelements,
                                 @restrict const dfloat * svgeo,
@@ -34,6 +48,7 @@ SOFTWARE.
                                 @restrict const dfloat * z,
                                 @restrict const dfloat * q,
                                 @restrict dfloat * qfl,
+                                @restrict const dfloat * gll_w
                                 @restrict dfloat *  rhsq){
 
   // Initialization
@@ -51,7 +66,7 @@ SOFTWARE.
         const dlong id = e*p_Np + j*p_Nq + i;
 
         // This part can be done once and stored in a shared memory!
-	q_w[j][i] = q_w[j][i] + gll_w[i]*gll_w[j]*q[id]; 
+	q_w[j][i] = gll_w[i]*gll_w[j]*q[id]; 
       }
     }
 
@@ -61,13 +76,44 @@ SOFTWARE.
       }
     }
     qfl[e] = qfl[e] / 4.0;
-  //}
+  }
 
   @barrier("local");
 
   // Flux-limiter function
   //for(dlong e=1;e<Nelements-1;++e;@outer(0)){
-    dfloat r = (qfl[e]-qfl[e-1])/(qfl[e+1]-qfl[e]+0.000001);
+  //  exclusive dfloat r = 0.0;
+  //  if((e>0)&&(e<Nelements-1))
+  //  dfloat r = (qfl[e]-qfl[e-1])/(qfl[e+1]-qfl[e]+0.000001);
+  //}
+
+  for(dlong e=0;e<Nelements;++e) {
+    em = EToE[e*4+3]; ep = EToE[e*4+1];
+    dfloat r = (qfl[e]-qfl[em])/(qfl[ep]-qfl[e]+0.000001);
+
+    // Find elements in need of limiting
+    dfloat u1 = q[e*p_Np + 0*p_Nq + 0];     // Left interface value 
+    dfloat u2 = q[e*p_Np + 0*p_Nq + Nq-1];  // Right interface value
+
+    dfloat u1_lim = qfl[e] - minmodLim(qfl[e]-u1,qfl[e]-qfl[em],qfl[ep]-qfl[e]);
+    dfloat u2_lim = qfl[e] + minmodLim(u2+qfl[e],qfl[e]-qfl[em],qfl[ep]-qfl[e]);
+
+    if((std::abs(u1_lim-u1)>eps0) || (std::abs(u2_lim-u2)>eps0)) {
+       for(int j=0;j<p_Nq;++j){
+         for(int i=0;i<p_Nq;++i) {
+           const dlong id = e*p_Np + j*p_Nq + i;
+
+           // Piecewise-constant approximation
+           q[id] = qfl[e];
+
+           // Piecewise-linear reconstruction
+         }
+       }
+
+    } 
+
+    // minmod limiter
+    // dfloat phi = std::max(0.0,std::min(1.0,r));
   }
 }
 
