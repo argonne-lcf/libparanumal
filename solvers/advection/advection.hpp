@@ -63,6 +63,12 @@ public:
   occa::kernel initialConditionKernel;
   occa::kernel maxWaveSpeedKernel;
 
+  // Experimental flux limiters
+  occa::memory o_qfl;
+  occa::memory o_gllw;
+  occa::memory o_EToE;
+  occa::kernel fluxLimitersKernel;
+
   advection_t() = delete;
   advection_t(platform_t &_platform, mesh_t &_mesh,
               advectionSettings_t& _settings):

@@ -132,11 +132,11 @@ advection_t& advection_t::Setup(platform_t& platform, mesh_t& mesh,
   // GLL weights
   int Nqnodes = mesh.Np;
   kernelInfo["defines/" "p_Nq"]= Nqnodes;
-  advection->o_gllw = platform.malloc((Nqnodes*sizeof(dfloat),mesh->w));
+  advection->o_gllw = platform.malloc(Nqnodes*sizeof(dfloat),mesh.w);
 
   // element-to-element connectivity
   int Nfaces = mesh.Nfaces;
-  advection->o_EToE = platform.malloc((Ncells*Nfaces*sizeof(dlong),mesh->EToE));
+  advection->o_EToE = platform.malloc(Ncells*Nfaces*sizeof(dlong),mesh.EToE);
 
   sprintf(fileName, DADVECTION "/okl/advectionFluxLimiters%s.okl", suffix);
   sprintf(kernelName, "advectionFluxLimiters%s", suffix);

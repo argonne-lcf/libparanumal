@@ -67,6 +67,14 @@ void advection_t::rhsf(occa::memory& o_Q, occa::memory& o_RHS, const dfloat T){
 
   traceHalo->ExchangeFinish(o_Q, 1, ogs_dfloat);
 
+  // Experimental - flux limiters
+  fluxLimitersKernel(mesh.Nelements,
+                     o_EToE,
+                     o_Q,
+                     o_qfl,
+                     o_gllw);
+
+
   surfaceKernel(mesh.Nelements,
                 mesh.o_sgeo,
                 mesh.o_LIFT,
@@ -80,17 +88,4 @@ void advection_t::rhsf(occa::memory& o_Q, occa::memory& o_RHS, const dfloat T){
                 o_Q,
                 o_RHS);
 
-  // Experimental - flux limiters
-  fluxLimitersKernel(mesh.Nelements,
-		     mesh.o_sgeo,
-		     mesh.o_vmapM,
-		     mesh.o_vmapP,
-		     mesh.o_EToB,
-		     mesh.o_x,
-		     mesh.o_y,
-		     mesh.o_z,
-		     o_Q,
-		     o_qfl,
-		     o_gllw,
-		     o_RHS);
 }

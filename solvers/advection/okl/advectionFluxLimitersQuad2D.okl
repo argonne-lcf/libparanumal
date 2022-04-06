@@ -36,60 +36,39 @@ dfloat minmodLim( dfloat a, dfloat b, dfloat c ) {
 
   if(s!=0) m = s*std::min({std::abs(a),std::abs(b),std::abs(c)});
 
-  return s;
+  return m;
 }
 
 @kernel void advectionFluxLimitersQuad2D (const dlong Nelements,
-                                @restrict const dfloat * svgeo,
-                                @restrict const dlong  * vmapM,
-                                @restrict const dlong  * vmapP,
-                                @restrict const dfloat * x,
-                                @restrict const dfloat * y,
-                                @restrict const dfloat * z,
+                                @restrict const dlong  * EToE,
                                 @restrict const dfloat * q,
                                 @restrict dfloat * qfl,
-                                @restrict const dfloat * gll_w
-                                @restrict dfloat *  rhsq){
+                                @restrict const dfloat * gll_w){
 
-  // Initialization
-  for(dlong e=0;e<Nelements;++e;@outer(0)){
+  for(dlong e=0;e<Nelements;++e;@tile(16,@outer,@inner)){
+    // Initialization
     qfl[e] = 0.0;
-  //}
 
-  // Volume-averaging
-  //for(dlong e=0;e<Nelements;++e;@outer(0)){
-    @shared dfloat q_w[p_Nq][p_Nq];
+    // Volume-averaging
+    dfloat q_w = 0.0;
 
-    for(int j=0;j<p_Nq;++j;@inner(1)){
-      for(int i=0;i<p_Nq;++i;@inner(0)){
+    for(int j=0;j<p_Nq;++j){
+      for(int i=0;i<p_Nq;++i){
 
         const dlong id = e*p_Np + j*p_Nq + i;
 
         // This part can be done once and stored in a shared memory!
-	q_w[j][i] = gll_w[i]*gll_w[j]*q[id]; 
+	q_w += gll_w[i]*gll_w[j]*q[id]; 
       }
     }
 
-    for(int j=0;j<p_Nq;++j){
-      for(int i=0;i<p_Nq;++i) {
-        qfl[e] = qfl[e] + q_w[j][i];
-      }
-    }
-    qfl[e] = qfl[e] / 4.0;
-  }
+    qfl[e] = q_w / 4.0;
 
-  @barrier("local");
+    @barrier("local");
 
-  // Flux-limiter function
-  //for(dlong e=1;e<Nelements-1;++e;@outer(0)){
-  //  exclusive dfloat r = 0.0;
-  //  if((e>0)&&(e<Nelements-1))
-  //  dfloat r = (qfl[e]-qfl[e-1])/(qfl[e+1]-qfl[e]+0.000001);
-  //}
-
-  for(dlong e=0;e<Nelements;++e) {
+    // Computing slopes based on neighbor elements and applying limiters
     em = EToE[e*4+3]; ep = EToE[e*4+1];
-    dfloat r = (qfl[e]-qfl[em])/(qfl[ep]-qfl[e]+0.000001);
+    // dfloat r = (qfl[e]-qfl[em])/(qfl[ep]-qfl[e]+0.000001);
 
     // Find elements in need of limiting
     dfloat u1 = q[e*p_Np + 0*p_Nq + 0];     // Left interface value 
@@ -109,12 +88,8 @@ dfloat minmodLim( dfloat a, dfloat b, dfloat c ) {
            // Piecewise-linear reconstruction
          }
        }
+    }
+ 
+  } // end of for loop over elements
 
-    } 
-
-    // minmod limiter
-    // dfloat phi = std::max(0.0,std::min(1.0,r));
-  }
 }
-
-
