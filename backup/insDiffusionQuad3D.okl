@@ -84,7 +84,7 @@ SOFTWARE.
     #pragma unroll p_NVfields
     for (int fld=0; fld<p_NVfields; fld++) {
 
-      @barrier("local");
+      @barrier;
 
       // prefetch q(:,:,:,e) to @shared
       for(int j=0; j<p_Nq; ++j; @inner(1)) {
@@ -100,7 +100,7 @@ SOFTWARE.
         }
       }
         
-      @barrier("local");
+      @barrier;
 
       //surface terms
       for(int j=0; j<p_Nq; ++j; @inner(1)) {
@@ -115,7 +115,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       //surface terms
       for(int j=0; j<p_Nq; ++j; @inner(1)) {
@@ -130,7 +130,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0; j<p_Nq; ++j; @inner(1)) {
         for(int i=0; i<p_Nq; ++i; @inner(0)) {
@@ -158,7 +158,7 @@ SOFTWARE.
       }
 
       // r term ----->
-      @barrier("local");
+      @barrier;
 
       for(int j=0; j<p_Nq; ++j; @inner(1)) {
         for(int i=0; i<p_Nq; ++i; @inner(0)) {
@@ -166,7 +166,7 @@ SOFTWARE.
         }
       }
       
-      @barrier("local");
+      @barrier;
 
       for(int j=0; j<p_Nq; ++j; @inner(1)) {
         for(int i=0; i<p_Nq; ++i; @inner(0)) {
@@ -181,7 +181,7 @@ SOFTWARE.
       }
 
       // s term ---->
-      @barrier("local");
+      @barrier;
 
       for(int j=0; j<p_Nq; ++j; @inner(1)) {
         for(int i=0; i<p_Nq; ++i; @inner(0)) {
@@ -189,7 +189,7 @@ SOFTWARE.
         }
       }
       
-      @barrier("local");
+      @barrier;
 
       for(int j=0; j<p_Nq; ++j; @inner(1)) {
         for(int i=0; i<p_Nq; ++i; @inner(0)) {

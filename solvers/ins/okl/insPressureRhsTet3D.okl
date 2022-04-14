@@ -61,7 +61,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_maxNodes;++n;@inner(0)){
       if(n<p_NfacesNfp){
@@ -91,7 +91,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_maxNodes;++n;@inner(0)){
       if(n<p_Np){
@@ -133,7 +133,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_maxNodes;++n;@inner(0)){
       if(n<p_Np){
@@ -143,7 +143,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_maxNodes;++n;@inner(0)){
       if(n<p_Np){
@@ -237,7 +237,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // dpdx += LIFT*(sJ/J)*nx*dp
     for(int n=0;n<p_maxNodes;++n;@inner(0)){
@@ -281,7 +281,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_maxNodes;++n;@inner(0)){
       if(n<p_NfacesNfp){
@@ -307,7 +307,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_maxNodes;++n;@inner(0)){
       if(n<p_Np){
@@ -323,7 +323,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_maxNodes;++n;@inner(0)){
       if(n<p_Np){

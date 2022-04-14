@@ -44,7 +44,7 @@ SOFTWARE.
       s_q[n] = q[id];
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_Np;++n;@inner(0)){
       const dlong gid = e*p_Nggeo;
@@ -108,7 +108,7 @@ SOFTWARE.
       s_q[n] = q[id];
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_Np;++n;@inner(0)){
       const dlong element = elementList[e];
@@ -229,7 +229,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int b=0;b<p_Nb;++b;@inner(1)){
       for(int n=0;n<p_Np;++n;@inner(0)){

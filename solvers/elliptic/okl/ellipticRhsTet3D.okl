@@ -47,7 +47,7 @@ SOFTWARE.
       s_q[n] = f;
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_Np;++n;@inner(0)){
       const dlong gid = e*p_Nggeo;

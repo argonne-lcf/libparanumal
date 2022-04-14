@@ -45,7 +45,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int es=0;es<p_NblockVFine;++es;@inner(1)){
       for(int n=0;n<p_NpFine;++n;@inner(0)){
@@ -91,7 +91,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int es=0;es<p_NblockVFine;++es;@inner(1)){
       for(int n=0;n<p_NpFine;++n;@inner(0)){

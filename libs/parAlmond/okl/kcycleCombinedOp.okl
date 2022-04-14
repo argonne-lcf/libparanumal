@@ -53,7 +53,7 @@ SOFTWARE.
         id += p_BLOCKSIZE*Nblocks;
       }
     }
-    @barrier("local");
+    @barrier;
 
 #if p_BLOCKSIZE>512
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
@@ -63,7 +63,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+512];
       }
     }
-    @barrier("local");
+    @barrier;
 #endif
 
 #if p_BLOCKSIZE>256
@@ -74,7 +74,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+256];
       }
     }
-    @barrier("local");
+    @barrier;
 #endif
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
@@ -84,7 +84,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+128];
       }
     }
-    @barrier("local");
+    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<64) {
@@ -93,7 +93,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+64];
       }
     }
-    @barrier("local");
+    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<32) {
@@ -102,7 +102,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+32];
       }
     }
-    @barrier("local");
+    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<16) {
@@ -111,7 +111,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+16];
       }
     }
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<8) {
@@ -120,7 +120,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+8];
       }
     }
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<4) {
@@ -129,7 +129,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+4];
       }
     }
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<2) {
@@ -138,7 +138,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+2];
       }
     }
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<1) {
@@ -180,7 +180,7 @@ SOFTWARE.
         id += p_BLOCKSIZE*Nblocks;
       }
     }
-    @barrier("local");
+    @barrier;
 
     #if p_BLOCKSIZE>512
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
@@ -190,7 +190,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+512];
       }
     }
-    @barrier("local");
+    @barrier;
 #endif
 
 #if p_BLOCKSIZE>256
@@ -201,7 +201,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+256];
       }
     }
-    @barrier("local");
+    @barrier;
 #endif
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
@@ -211,7 +211,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+128];
       }
     }
-    @barrier("local");
+    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<64) {
@@ -220,7 +220,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+64];
       }
     }
-    @barrier("local");
+    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<32) {
@@ -229,7 +229,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+32];
       }
     }
-    @barrier("local");
+    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<16) {
@@ -238,7 +238,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+16];
       }
     }
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<8) {
@@ -247,7 +247,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+8];
       }
     }
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<4) {
@@ -256,7 +256,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+4];
       }
     }
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<2) {
@@ -265,7 +265,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+2];
       }
     }
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<1) {
@@ -308,7 +308,7 @@ SOFTWARE.
         id += p_BLOCKSIZE*Nblocks;
       }
     }
-    @barrier("local");
+    @barrier;
 
 #if p_BLOCKSIZE>512
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
@@ -318,7 +318,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+512];
       }
     }
-    @barrier("local");
+    @barrier;
 #endif
 
 #if p_BLOCKSIZE>256
@@ -329,7 +329,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+256];
       }
     }
-    @barrier("local");
+    @barrier;
 #endif
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
@@ -339,7 +339,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+128];
       }
     }
-    @barrier("local");
+    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<64) {
@@ -348,7 +348,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+64];
       }
     }
-    @barrier("local");
+    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<32) {
@@ -357,7 +357,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+32];
       }
     }
-    @barrier("local");
+    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<16) {
@@ -366,7 +366,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+16];
       }
     }
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<8) {
@@ -375,7 +375,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+8];
       }
     }
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<4) {
@@ -384,7 +384,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+4];
       }
     }
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<2) {
@@ -393,7 +393,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+2];
       }
     }
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<1) {
@@ -437,7 +437,7 @@ SOFTWARE.
         id += p_BLOCKSIZE*Nblocks;
       }
     }
-    @barrier("local");
+    @barrier;
 
     #if p_BLOCKSIZE>512
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
@@ -447,7 +447,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+512];
       }
     }
-    @barrier("local");
+    @barrier;
 #endif
 
 #if p_BLOCKSIZE>256
@@ -458,7 +458,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+256];
       }
     }
-    @barrier("local");
+    @barrier;
 #endif
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
@@ -468,7 +468,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+128];
       }
     }
-    @barrier("local");
+    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<64) {
@@ -477,7 +477,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+64];
       }
     }
-    @barrier("local");
+    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<32) {
@@ -486,7 +486,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+32];
       }
     }
-    @barrier("local");
+    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<16) {
@@ -495,7 +495,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+16];
       }
     }
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<8) {
@@ -504,7 +504,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+8];
       }
     }
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<4) {
@@ -513,7 +513,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+4];
       }
     }
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<2) {
@@ -522,7 +522,7 @@ SOFTWARE.
         s_ip[2*p_BLOCKSIZE+t] += s_ip[2*p_BLOCKSIZE+t+2];
       }
     }
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) {
       if(t<1) {

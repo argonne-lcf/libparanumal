@@ -59,7 +59,7 @@ SOFTWARE.
       s_DT[j][i] = DT[j*p_Nq+i];
     }
 
-    @barrier("local");
+    @barrier;
 
     squareThreads{
       const dlong base = e*p_Nggeo*p_Np + j*p_Nq + i;
@@ -86,13 +86,13 @@ SOFTWARE.
     }
 
     // r term ----->
-    @barrier("local");
+    @barrier;
 
     squareThreads{
       s_q[j][i] = r_G00*r_qr + r_G01*r_qs;
     }
 
-    @barrier("local");
+    @barrier;
 
     squareThreads{
       dfloat tmp = 0.f;
@@ -105,13 +105,13 @@ SOFTWARE.
     }
 
     // s term ---->
-    @barrier("local");
+    @barrier;
 
     squareThreads{
       s_q[j][i] = r_G01*r_qr + r_G11*r_qs;
     }
 
-    @barrier("local");
+    @barrier;
 
     squareThreads{
       dfloat tmp = 0.f;
@@ -161,7 +161,7 @@ SOFTWARE.
       s_DT[j][i] = DT[j*p_Nq+i];
     }
 
-    @barrier("local");
+    @barrier;
 
     squareThreads{
 
@@ -189,13 +189,13 @@ SOFTWARE.
     }
 
     // r term ----->
-    @barrier("local");
+    @barrier;
 
     squareThreads{
       s_q[j][i] = r_G00*r_qr + r_G01*r_qs;
     }
 
-    @barrier("local");
+    @barrier;
 
     squareThreads{
       dfloat tmp = 0.f;
@@ -208,13 +208,13 @@ SOFTWARE.
     }
 
     // s term ---->
-    @barrier("local");
+    @barrier;
 
     squareThreads{
       s_q[j][i] = r_G01*r_qr + r_G11*r_qs;
     }
 
-    @barrier("local");
+    @barrier;
 
     squareThreads{
       dfloat tmp = 0.f;

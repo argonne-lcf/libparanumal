@@ -100,7 +100,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //interpolate in i, store in register
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -126,7 +126,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //write register back to @shared
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -144,7 +144,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //interpolate in j and store flux in register
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -168,7 +168,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int j=0;j<p_cubNq;++j;@inner(1)){
       for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -233,7 +233,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //project/differentiate in j
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -259,7 +259,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //write register back to @shared
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -277,7 +277,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //project/differentiate in i and write back
     for(int j=0;j<p_cubNq;++j;@inner(1)){

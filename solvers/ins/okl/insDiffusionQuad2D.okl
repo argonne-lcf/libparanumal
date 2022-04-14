@@ -110,7 +110,7 @@ SOFTWARE.
     #pragma unroll p_NVfields
     for (int fld=0; fld<p_NVfields; fld++) {
 
-      @barrier("local");
+      @barrier;
 
       // loop over slabs
       for(int j=0;j<p_Nq;++j){
@@ -131,7 +131,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       // loop over faces to add pseudo-gradient
 
@@ -144,7 +144,7 @@ SOFTWARE.
         surfaceTerms(sk2,2,i,p_Nq-1);
       }
 
-      @barrier("local");
+      @barrier;
 
       // face 1 & 3
       for(int j=0;j<p_Nq;++j;@inner(0)){
@@ -155,7 +155,7 @@ SOFTWARE.
         surfaceTerms(sk3,3,0,j);
       }
 
-      @barrier("local");
+      @barrier;
 
       // prescale by geofacs
       for(int j=0;j<p_Nq;++j){
@@ -177,7 +177,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       // loop over slabs
       for(int j=0;j<p_Nq;++j){

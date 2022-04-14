@@ -48,7 +48,7 @@
       }
     }
 
-    @barrier("local");
+    @barrier;
 
 
     for(dlong e=eo;e<eo+p_NblockV;++e;@inner(1)){
@@ -121,7 +121,7 @@
       }
     }
 
-    @barrier("local");
+    @barrier;
 
 
     for(dlong e=eo;e<eo+p_NblockV;++e;@inner(1)){

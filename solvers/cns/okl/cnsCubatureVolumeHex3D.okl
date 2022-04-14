@@ -91,7 +91,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //read in and interpolate in k
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -138,7 +138,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     #pragma unroll p_cubNq
     for(int k=0;k<p_cubNq;++k){
@@ -156,7 +156,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -182,7 +182,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -197,7 +197,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -221,7 +221,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
     }
 
     //#pragma unroll p_cubNq
@@ -325,7 +325,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -344,7 +344,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
     } //k loop
 
     #pragma unroll p_cubNq
@@ -358,7 +358,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -378,7 +378,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -390,7 +390,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -410,7 +410,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
     }
 
     //project in k and write out

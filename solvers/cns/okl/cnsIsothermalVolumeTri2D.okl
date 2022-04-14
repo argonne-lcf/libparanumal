@@ -106,7 +106,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_Np;++n;@inner(0)){
 

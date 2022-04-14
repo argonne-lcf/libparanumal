@@ -52,7 +52,7 @@ SOFTWARE.
 
     for (int fld = 0; fld < dim; ++fld) {
 
-      @barrier("local");
+      @barrier;
 
       for (int t = 0; t < p_blockSize; ++t; @inner(0)) {
         dlong id = t + p_blockSize*b;
@@ -68,7 +68,7 @@ SOFTWARE.
         s_wxy[t] = res;
       }
 
-      @barrier("local");
+      @barrier;
 
 #if p_blockSize>512
       for(int t=0;t<p_blockSize;++t;@inner(0))
@@ -76,7 +76,7 @@ SOFTWARE.
           s_wxy[t] += s_wxy[t+512];
         }
 
-      @barrier("local");
+      @barrier;
 #endif
 
 #if p_blockSize>256
@@ -85,7 +85,7 @@ SOFTWARE.
           s_wxy[t] += s_wxy[t+256];
         }
 
-      @barrier("local");
+      @barrier;
 #endif
 
       for(int t=0;t<p_blockSize;++t;@inner(0))
@@ -93,14 +93,14 @@ SOFTWARE.
           s_wxy[t] += s_wxy[t+128];
         }
 
-      @barrier("local");
+      @barrier;
 
       for(int t=0;t<p_blockSize;++t;@inner(0))
         if(t< 64){
           s_wxy[t] += s_wxy[t+64];
         }
 
-      @barrier("local");
+      @barrier;
 
       for(int t=0;t<p_blockSize;++t;@inner(0))
         if(t< 32){
@@ -127,7 +127,7 @@ SOFTWARE.
           s_wxy[t] += s_wxy[t+2];
         }
 
-      @barrier("local");
+      @barrier;
 
       // assumes igNhist < p_blockSize
       for(int t=0;t<p_blockSize;++t;@inner(0)){

@@ -61,7 +61,7 @@ SOFTWARE.
     #pragma unroll p_NVfields
     for (int i=0; i<p_NVfields; i++) {
 
-      @barrier("local");
+      @barrier;
       for(int n=0;n<p_maxNodes;++n;@inner(0)){
         element = elementList[e];
 
@@ -139,7 +139,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       // dqdx += LIFT*(sJ/J)*nx*dq
       for(int n=0;n<p_maxNodes;++n;@inner(0)){
@@ -170,7 +170,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int n=0;n<p_maxNodes;++n;@inner(0)){
         if(n<p_NfacesNfp){
@@ -179,7 +179,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int n=0;n<p_maxNodes;++n;@inner(0)){
         if(n<p_Np){

@@ -460,7 +460,7 @@ SOFTWARE.
       }
     }//for c
 
-    @barrier("local");
+    @barrier;
 
     // 3. transform in a
     for(int c=0;c<p_cubNq;++c;@inner(1)){
@@ -487,7 +487,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // 4. transform in c
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -526,7 +526,7 @@ SOFTWARE.
 #pragma unroll p_cubNq
     for(int k=0; k<p_cubNq; ++k) {
 
-      @barrier("local");
+      @barrier;
       
       for(int j=0; j<p_cubNq; ++j; @inner(1)) {
 	for(int i=0; i<p_cubNq; ++i; @inner(0)) {
@@ -570,7 +570,7 @@ SOFTWARE.
 	}
       }
       
-      @barrier("local");
+      @barrier;
       
       // weak diff
       for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -589,7 +589,7 @@ SOFTWARE.
       }
     }//k
   
-    @barrier("local");
+    @barrier;
     
     // share r_q[:]
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -605,7 +605,7 @@ SOFTWARE.
     //=========== now project =================================================
     // b -> c -> a
 
-    @barrier("local");
+    @barrier;
 
   
     // test in b

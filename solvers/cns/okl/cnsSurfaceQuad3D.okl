@@ -269,7 +269,7 @@ void surfaceTerms(const int e,
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // for all face nodes of all elements
     // face 0 & 2
@@ -291,7 +291,7 @@ void surfaceTerms(const int e,
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // face 1 & 3
     for(int es=0;es<p_NblockS;++es;@inner(1)){
@@ -312,7 +312,7 @@ void surfaceTerms(const int e,
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // for each node in the element
     for(int es=0;es<p_NblockS;++es;@inner(1)){
@@ -456,7 +456,7 @@ void stressSurfaceTerms(const int e,
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // for all face nodes of all elements
     // face 0 & 2
@@ -479,7 +479,7 @@ void stressSurfaceTerms(const int e,
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // face 1 & 3
     for(int es=0;es<p_NblockS;++es;@inner(1)){
@@ -500,7 +500,7 @@ void stressSurfaceTerms(const int e,
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // for each node in the element
     for(int es=0;es<p_NblockS;++es;@inner(1)){

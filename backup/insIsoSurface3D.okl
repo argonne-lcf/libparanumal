@@ -260,7 +260,7 @@ int marchingTet(const int fld,
       }
     }
 
-    @barrier("local");
+    @barrier;
     
     for(int n=0;n<p_plotNthreads;++n;@inner(0)){
       if(n<p_plotNp){
@@ -288,7 +288,7 @@ int marchingTet(const int fld,
     }
     
     
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_plotNthreads;++n;@inner(0)){
 

@@ -52,7 +52,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_Nmax;++n;@inner(0)){
       if(n<p_NfacesNfp){
@@ -82,7 +82,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_Nmax;++n;@inner(0)){
       if(n<p_Np){

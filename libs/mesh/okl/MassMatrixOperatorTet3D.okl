@@ -44,7 +44,7 @@ SOFTWARE.
         s_q[f][n] = q[qbase+f*p_Np];
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_Np;++n;@inner(0)){
       const dlong gid = e*p_Nggeo;

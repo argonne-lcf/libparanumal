@@ -59,7 +59,7 @@ SOFTWARE.
     ////#pragma unroll p_NVfields
     for (int fld=0; fld<p_NVfields; fld++) {
 
-      @barrier("local");
+      @barrier;
 
       for(int n=0;n<p_maxNodes;++n;@inner(0)){
     
@@ -88,7 +88,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int n=0;n<p_maxNodes;++n;@inner(0)){
         //#pragma unroll p_Ne
@@ -141,7 +141,7 @@ SOFTWARE.
         }
       }
       
-      @barrier("local");
+      @barrier;
 
       for(int n=0;n<p_maxNodes;++n;@inner(0)){
   

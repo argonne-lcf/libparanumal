@@ -77,7 +77,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //interpolate in i, store in register
     for(int es=0;es<p_NblockCub;++es;@inner(2)){
@@ -101,7 +101,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //write register back to @shared
     for(int es=0;es<p_NblockCub;++es;@inner(2)){
@@ -116,7 +116,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
 
     //interpolate in j, store in register
@@ -139,7 +139,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //construct nonlinear term from registers
     for(int es=0;es<p_NblockCub;++es;@inner(2)){
@@ -167,7 +167,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //project in j
     for(int es=0;es<p_NblockCub;++es;@inner(2)){
@@ -190,7 +190,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //write register back to @shared
     for(int es=0;es<p_NblockCub;++es;@inner(2)){
@@ -205,7 +205,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // project in i and update
     for(int es=0;es<p_NblockCub;++es;@inner(2)){
@@ -303,7 +303,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //interpolate in i, store in register
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -330,7 +330,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //write register back to @shared
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -345,7 +345,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
      //interpolate in j, store in register
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -369,7 +369,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //construct nonlinear term from registers
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -407,7 +407,7 @@ SOFTWARE.
     }
 
 
-    @barrier("local");
+    @barrier;
 
     //project in j
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -431,7 +431,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //write register back to @shared
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -446,7 +446,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // project in i and update
     for(int j=0;j<p_cubNq;++j;@inner(1)){

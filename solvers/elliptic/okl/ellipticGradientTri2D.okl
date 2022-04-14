@@ -43,7 +43,7 @@ SOFTWARE.
       s_q[n] = q[id];
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_Np;++n;@inner(0)){
 
@@ -107,7 +107,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int e=eo;e<eo+p_NblockV;++e;@inner(1)){
       for(int n=0;n<p_Np;++n;@inner(0)){
@@ -219,7 +219,7 @@ SOFTWARE.
         }
       }
 
-    @barrier("local");
+    @barrier;
 
     for(int es=0;es<p_NbV; ++es; @inner(1)){
       for(int n=0;n<p_Np;++n;@inner(0)){

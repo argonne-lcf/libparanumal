@@ -45,7 +45,7 @@ SOFTWARE.
       s_v[n] = rv/r;
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_Np;++n;@inner(0)){
       // prefetch geometric factors (constant on triangle)

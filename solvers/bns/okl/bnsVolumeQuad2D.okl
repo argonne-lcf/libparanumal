@@ -76,7 +76,7 @@ SOFTWARE.
 
 
     // make sure all node data is loaded into @shared
-    @barrier("local");
+    @barrier;
 
     for(int es=0;es<p_NblockV;++es;@inner(2)){// for all elements in block
       for(int j=0; j<p_Nq; ++j;@inner(1)){
@@ -204,7 +204,7 @@ SOFTWARE.
       }
     }
     // make sure all node data is loaded into @shared
-    @barrier("local");
+    @barrier;
     for(int es=0;es<p_NblockV;++es;@inner(2)){// for all elements in block
       for(int j=0; j<p_Nq; ++j;@inner(1)){
         for(int i=0; i<p_Nq; ++i; @inner(0)){
@@ -349,7 +349,7 @@ SOFTWARE.
       }
     }
     // make sure all node data is loaded into @shared
-    @barrier("local");
+    @barrier;
     for(int es=0;es<p_NblockV;++es;@inner(2)){// for all elements in block
       for(int j=0; j<p_Nq; ++j;@inner(1)){
         for(int i=0; i<p_Nq; ++i; @inner(0)){

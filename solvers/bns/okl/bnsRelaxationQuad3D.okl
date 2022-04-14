@@ -150,7 +150,7 @@
       }
     }
       
-    @barrier("local");
+    @barrier;
 
     //interpolate in i, store in register
     for(int es=0;es<p_NblockV;++es;@inner(2)){   
@@ -175,7 +175,7 @@
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //write register back to @shared
     for(int es=0;es<p_NblockV;++es;@inner(2)){   
@@ -190,7 +190,7 @@
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //interpolate in j, store in register
     for(int es=0;es<p_NblockV;++es;@inner(2)){   
@@ -212,7 +212,7 @@
       }
     }
 
-    @barrier("local");
+    @barrier;
   
     //interpolate in j, store in register
     for(int es=0;es<p_NblockV;++es;@inner(2)){   
@@ -247,7 +247,7 @@
       }
     }
     
-    @barrier("local");
+    @barrier;
     
     //project in j
     for(int es=0;es<p_NblockV;++es;@inner(2)){   
@@ -270,7 +270,7 @@
       }
     }
     
-    @barrier("local"); 
+    @barrier; 
 
     //write register back to @shared
     for(int es=0;es<p_NblockV;++es;@inner(2)){   
@@ -285,7 +285,7 @@
       }
     }
     
-    @barrier("local");
+    @barrier;
     
     // project in i and update
     for(int es=0;es<p_NblockV;++es;@inner(2)){ 

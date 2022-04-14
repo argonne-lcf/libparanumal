@@ -75,7 +75,7 @@ SOFTWARE.
     }
 
     // make sure all node data is loaded into @shared
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_maxNodes;++n;@inner(0)){
 
@@ -154,7 +154,7 @@ SOFTWARE.
     }
 
     // make sure all node data is loaded into @shared
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_maxNodes;++n;@inner(0)){
 

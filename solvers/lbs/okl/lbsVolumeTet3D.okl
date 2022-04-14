@@ -56,7 +56,7 @@ SOFTWARE.
           }
         }
     // make sure all node data is loaded into @shared
-    @barrier("local");
+    @barrier;
 
       for(int n=0;n<p_Np;++n;@inner(0)){     // for all nodes in this element
         if(et<Nelements){

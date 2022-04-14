@@ -103,7 +103,7 @@ SOFTWARE.
 
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_Np;++n;@inner(0)){
 
@@ -155,7 +155,7 @@ SOFTWARE.
       s_w[n] = q[qbase+3*p_Np];
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_Np;++n;@inner(0)){
 
@@ -246,7 +246,7 @@ SOFTWARE.
         }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_Np;++n;@inner(0)){
 
@@ -372,7 +372,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int et=0;et<p_NblockV;++et;@inner(1)){
       for(int n=0;n<p_Np;++n;@inner(0)){

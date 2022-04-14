@@ -53,7 +53,7 @@ for(dlong e=0;e<Nelements;++e;@outer(0)){
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // loop over slabs
     for(int k=0;k<p_Nq;++k){

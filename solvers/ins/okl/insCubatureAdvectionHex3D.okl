@@ -88,7 +88,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //read in and interpolate in k
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -113,7 +113,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     #pragma unroll p_cubNq
     for(int k=0;k<p_cubNq;++k){
@@ -128,7 +128,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -146,7 +146,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -158,7 +158,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -174,7 +174,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
     }
 
     //#pragma unroll p_cubNq
@@ -215,7 +215,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -239,7 +239,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
     } //k loop
 
     #pragma unroll p_cubNq
@@ -253,7 +253,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -271,7 +271,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -283,7 +283,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -301,7 +301,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
     }
 
     //project in k and write out
@@ -369,7 +369,7 @@ SOFTWARE.
       }                                                                 \
     }                                                                   \
                                                                         \
-    @barrier("local");                                                  \
+    @barrier;                                                  \
                                                                         \
     for(int j=0;j<p_cubNq;++j;@inner(1)){                               \
       for(int i=0;i<p_cubNq;++i;@inner(0)){                             \
@@ -389,7 +389,7 @@ SOFTWARE.
       }                                                                 \
     }                                                                   \
                                                                         \
-    @barrier("local");                                                  \
+    @barrier;                                                  \
                                                                         \
     for(int j=0;j<p_cubNq;++j;@inner(1)){                               \
       for(int i=0;i<p_cubNq;++i;@inner(0)){                             \
@@ -404,7 +404,7 @@ SOFTWARE.
       }                                                                 \
     }                                                                   \
                                                                         \
-    @barrier("local");                                                  \
+    @barrier;                                                  \
                                                                         \
     for(int j=0;j<p_cubNq;++j;@inner(1)){                               \
       for(int i=0;i<p_cubNq;++i;@inner(0)){                             \
@@ -422,7 +422,7 @@ SOFTWARE.
       }                                                                 \
     }                                                                   \
                                                                         \
-    @barrier("local");                                                  \
+    @barrier;                                                  \
                                                                         \
     for(int j=0;j<p_cubNq;++j;@inner(1)){                               \
       for(int i=0;i<p_cubNq;++i;@inner(0)){                             \
@@ -457,7 +457,7 @@ SOFTWARE.
       }                                                                 \
     }                                                                   \
                                                                         \
-    @barrier("local");                                                  \
+    @barrier;                                                  \
                                                                         \
     for(int j=0;j<p_cubNq;++j;@inner(1)){                               \
       for(int i=0;i<p_cubNq;++i;@inner(0)){                             \
@@ -473,7 +473,7 @@ SOFTWARE.
       }                                                                 \
     }                                                                   \
                                                                         \
-    @barrier("local");                                                  \
+    @barrier;                                                  \
                                                                         \
     for(int j=0;j<p_cubNq;++j;@inner(1)){                               \
       for(int i=0;i<p_cubNq;++i;@inner(0)){                             \
@@ -484,7 +484,7 @@ SOFTWARE.
         }                                                               \
       }                                                                 \
     }                                                                   \
-    @barrier("local");                                                  \
+    @barrier;                                                  \
                                                                         \
     for(int j=0;j<p_cubNq;++j;@inner(1)){                               \
       for(int i=0;i<p_cubNq;++i;@inner(0)){                             \
@@ -500,7 +500,7 @@ SOFTWARE.
       }                                                                 \
     }                                                                   \
                                                                         \
-    @barrier("local");                                                  \
+    @barrier;                                                  \
                                                                         \
     for(int j=0;j<p_cubNq;++j;@inner(1)){                               \
       for(int i=0;i<p_cubNq;++i;@inner(0)){                             \
@@ -578,11 +578,11 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     quadSurfaceTerms(0) //face 0
 
-    @barrier("local");
+    @barrier;
 
     //accumulate in register pencil
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -595,11 +595,11 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     quadSurfaceTerms(5) //face 5
 
-    @barrier("local");
+    @barrier;
 
     //accumulate in register pencil
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -612,11 +612,11 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     quadSurfaceTerms(1) //face 1
 
-    @barrier("local");
+    @barrier;
 
     //accumulate in register pencil
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -632,11 +632,11 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     quadSurfaceTerms(3) //face 3
 
-    @barrier("local");
+    @barrier;
 
     //accumulate in register pencil
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -652,11 +652,11 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     quadSurfaceTerms(2) //face 2
 
-    @barrier("local");
+    @barrier;
 
     //accumulate in register pencil
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -672,11 +672,11 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     quadSurfaceTerms(4) //face 4
 
-    @barrier("local");
+    @barrier;
 
     //accumulate in register pencil
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -692,7 +692,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int j=0;j<p_cubNq;++j;@inner(1)){
       for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -754,7 +754,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //read in and interpolate in k
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -779,7 +779,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     #pragma unroll p_cubNq
     for(int k=0;k<p_cubNq;++k){
@@ -794,7 +794,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -812,7 +812,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -824,7 +824,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -844,11 +844,11 @@ SOFTWARE.
           cU[id+2*offset] = r_W[k];
         }
       }
-      @barrier("local");
+      @barrier;
     }
   }
 
-  @barrier("global");
+  @barrier;
 
   //-----------------------------@kernel 2 do the reference divergence
   for(dlong e=0; e<Nelements; ++e; @outer(0)) {
@@ -881,7 +881,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     #pragma unroll p_cubNq
     for(int k=0;k<p_cubNq;++k){
@@ -922,7 +922,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -946,7 +946,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
     } //k loop
 
     //write out
@@ -963,7 +963,7 @@ SOFTWARE.
     }
   }
 
-  @barrier("global");
+  @barrier;
 
   //---------------------------@kernel 3 project fluxes back to GLL grid
   for(dlong e=0; e<Nelements; ++e; @outer(0)) {
@@ -990,7 +990,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //read in and project in k
     for(int j=0;j<p_cubNq;++j;@inner(1)){
@@ -1013,7 +1013,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     #pragma unroll p_Nq
     for(int k=0;k<p_Nq;++k){
@@ -1026,7 +1026,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -1044,7 +1044,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -1056,7 +1056,7 @@ SOFTWARE.
         }
       }
 
-      @barrier("local");
+      @barrier;
 
       for(int j=0;j<p_cubNq;++j;@inner(1)){
         for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -1081,7 +1081,7 @@ SOFTWARE.
           }
         }
       }
-      @barrier("local");
+      @barrier;
     }
   }
 }
@@ -1122,7 +1122,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int k=0;k<p_Nq;++k;@inner(2)){
       for(int j=0;j<p_Nq;++j;@inner(1)){

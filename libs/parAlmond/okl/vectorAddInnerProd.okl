@@ -56,38 +56,38 @@ SOFTWARE.
         id += p_BLOCKSIZE*Nblocks;
       }
     }
-    @barrier("local");
+    @barrier;
 
 #if p_BLOCKSIZE>512
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t<512) s_ip[t] += s_ip[t+512];
-    @barrier("local");
+    @barrier;
 #endif
 
 #if p_BLOCKSIZE>256
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t<256) s_ip[t] += s_ip[t+256];
-    @barrier("local");
+    @barrier;
 #endif
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t<128) s_ip[t] += s_ip[t+128];
-    @barrier("local");
+    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t< 64) s_ip[t] += s_ip[t+ 64];
-    @barrier("local");
+    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t< 32) s_ip[t] += s_ip[t+ 32];
-    @barrier("local");
+    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t< 16) s_ip[t] += s_ip[t+ 16];
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t<  8) s_ip[t] += s_ip[t+  8];
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t<  4) s_ip[t] += s_ip[t+  4];
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t<  2) s_ip[t] += s_ip[t+  2];
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t<  1) ip[b] = s_ip[0] + s_ip[1];
   }
@@ -125,38 +125,38 @@ SOFTWARE.
         id += p_BLOCKSIZE*Nblocks;
       }
     }
-    @barrier("local");
+    @barrier;
 
 #if p_BLOCKSIZE>512
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t<512) s_ip[t] += s_ip[t+512];
-    @barrier("local");
+    @barrier;
 #endif
 
 #if p_BLOCKSIZE>256
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t<256) s_ip[t] += s_ip[t+256];
-    @barrier("local");
+    @barrier;
 #endif
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t<128) s_ip[t] += s_ip[t+128];
-    @barrier("local");
+    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t< 64) s_ip[t] += s_ip[t+ 64];
-    @barrier("local");
+    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t< 32) s_ip[t] += s_ip[t+ 32];
-    @barrier("local");
+    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t< 16) s_ip[t] += s_ip[t+ 16];
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t<  8) s_ip[t] += s_ip[t+  8];
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t<  4) s_ip[t] += s_ip[t+  4];
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t<  2) s_ip[t] += s_ip[t+  2];
-    //    @barrier("local");
+    //    @barrier;
 
     for(int t=0;t<p_BLOCKSIZE;++t;@inner(0)) if(t<  1) ip[b] = s_ip[0] + s_ip[1];
   }

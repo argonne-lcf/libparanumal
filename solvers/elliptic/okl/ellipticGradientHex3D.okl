@@ -54,7 +54,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // loop over slabs
     for(int k=0;k<p_Nq;++k){
@@ -127,7 +127,7 @@ SOFTWARE.
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // loop over slabs
     for(int k=0;k<p_Nq;++k){

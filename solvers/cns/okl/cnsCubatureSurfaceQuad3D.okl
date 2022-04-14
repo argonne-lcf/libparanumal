@@ -261,7 +261,7 @@ void quadSurfaceTerms(const int face,
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     //interpolate traces, store flux in register 
     for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -308,7 +308,7 @@ void quadSurfaceTerms(const int face,
 	}
       }
     }
-    @barrier("local"); //need a barrier since s_fluxNU and s_fluxNV are aliased
+    @barrier; //need a barrier since s_fluxNU and s_fluxNV are aliased
 
     //write fluxes to @shared
     for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -386,7 +386,7 @@ void quadSurfaceTerms(const int face,
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // for all face nodes of all elements
     // face 0 & 2
@@ -403,7 +403,7 @@ void quadSurfaceTerms(const int face,
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // face 1 & 3
     for(int j=0;j<p_cubNq;++j;@inner(0)){
@@ -418,7 +418,7 @@ void quadSurfaceTerms(const int face,
       }
     }
   
-    @barrier("local");
+    @barrier;
     
     for(int i=0;i<p_cubNq;++i;@inner(0)){
       if(i<p_Nq) {
@@ -508,7 +508,7 @@ void quadSurfaceTerms(const int face,
     //#pragma unroll p_Nfaces
     for (int face=0;face<p_Nfaces;face++) {
 
-      @barrier("local");
+      @barrier;
 
       for(int i=0;i<p_cubNq;++i;@inner(0)){
 	if(i<p_Nq){
@@ -546,7 +546,7 @@ void quadSurfaceTerms(const int face,
 	}
       }
       
-      @barrier("local");
+      @barrier;
       
       for(int i=0;i<p_cubNq;++i;@inner(0)){
 	
@@ -631,7 +631,7 @@ void quadSurfaceTerms(const int face,
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // for all face nodes of all elements
     // face 0 & 2
@@ -651,7 +651,7 @@ void quadSurfaceTerms(const int face,
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // face 1 & 3
     for(int j=0;j<p_cubNq;++j;@inner(0)){
@@ -670,7 +670,7 @@ void quadSurfaceTerms(const int face,
       }
     }
   
-    @barrier("local");
+    @barrier;
     
     for(int i=0;i<p_cubNq;++i;@inner(0)){
       if(i<p_Nq) {

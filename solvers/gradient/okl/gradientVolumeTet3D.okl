@@ -266,7 +266,7 @@ void gradientVolumeTet3D(int Nelements,
     }
 
     // make sure all values are prefetched
-    @barrier("local");
+    @barrier;
 
     // loop over all nodes in element e
     for(int n=0;n<p_Np;++n;@inner(0)){ // distributed to thread
@@ -339,7 +339,7 @@ void gradientVolumeTet3D(int Nelements,
     }
 
     // make sure all values are prefetched
-    @barrier("local");
+    @barrier;
 
     // loop over all nodes in element e
     for(int n=0;n<p_Np;++n;@inner(0)){ // distributed to thread
@@ -434,7 +434,7 @@ void gradientVolumeTet3D(int Nelements,
     }
 
     // make sure all values are prefetched
-    @barrier("local");
+    @barrier;
 
     // loop over all nodes in element e
     for(int et=0;et<p_Nvec;++et;@inner(1)){

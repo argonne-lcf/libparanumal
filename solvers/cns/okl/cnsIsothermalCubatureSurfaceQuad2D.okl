@@ -208,7 +208,7 @@ void surfaceTerms(const int face,
       }
     }
 
-    @barrier("local");
+    @barrier;
 
 
     //interpolate traces, store flux in register
@@ -247,7 +247,7 @@ void surfaceTerms(const int face,
         }
     }
 
-    @barrier("local");
+    @barrier;
 
     //write fluxes to @shared
     for(int i=0;i<p_cubNq;++i;@inner(0)){
@@ -312,7 +312,7 @@ void surfaceTerms(const int face,
         }
     }
 
-    @barrier("local");
+    @barrier;
 
     // for all face nodes of all elements
     // face 0 & 2
@@ -329,7 +329,7 @@ void surfaceTerms(const int face,
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // face 1 & 3
     for(int j=0;j<p_cubNq;++j;@inner(0)){
@@ -344,7 +344,7 @@ void surfaceTerms(const int face,
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int i=0;i<p_cubNq;++i;@inner(0)){
       if(i<p_Nq) {

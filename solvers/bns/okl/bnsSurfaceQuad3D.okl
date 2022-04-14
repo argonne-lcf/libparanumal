@@ -133,7 +133,7 @@ void flux(const dfloat nx,
       }
       
       // wait for all global memory writes of the previous inner loop to complete
-      @barrier("global");
+      @barrier;
       
     }
   }
@@ -227,7 +227,7 @@ void flux(const dfloat nx,
       }
     }
       // wait for all global memory writes of the previous inner loop to complete
-      @barrier("global");
+      @barrier;
       
     }
   }

@@ -102,7 +102,7 @@
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     // dqdx += LIFT*(sJ/J)*nx*dq
     for(int n=0;n<p_Nmax;++n;@inner(0)){
@@ -139,7 +139,7 @@
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_Nmax;++n;@inner(0)){
       if(n<p_NfacesNfp){
@@ -161,7 +161,7 @@
 
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_Nmax;++n;@inner(0)){
       if(n<p_Np){
@@ -177,7 +177,7 @@
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int n=0;n<p_Nmax;++n;@inner(0)){
 
@@ -352,7 +352,7 @@
       }
     }
 
-    @barrier("local");
+    @barrier;
 
     for(int es=0;es<p_NbV;++es;@inner(1)){//
       for(int n=0;n<p_Nmax;++n;@inner(0)){
@@ -423,7 +423,7 @@
     }
 
 
-    @barrier("local");
+    @barrier;
 
     for(int es=0;es<p_NbV;++es;@inner(1)){//
       for(int n=0;n<p_Nmax;++n;@inner(0)){
@@ -468,7 +468,7 @@
     }
 
 
-    @barrier("local");
+    @barrier;
 
     for(int es=0;es<p_NbV;++es;@inner(1)){//
       for(int n=0;n<p_Nmax;++n;@inner(0)){
@@ -498,7 +498,7 @@
     }
 
 
-    @barrier("local");
+    @barrier;
 
     for(int es=0;es<p_NbV;++es;@inner(1)){//
       for(int n=0;n<p_Nmax;++n;@inner(0)){
