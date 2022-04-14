@@ -29,9 +29,7 @@ typedef long long long_long;
 #define OGS_FOR_EACH_TYPE(macro) \
   macro(double   ) \
   macro(float    ) \
-  macro(int      ) \
-  macro(long     ) \
-  macro(long_long)
+  macro(int      )
 
 /* the supported ops */
 #define OGS_FOR_EACH_OP(T,macro) \

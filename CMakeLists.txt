@@ -34,10 +34,10 @@ add_compile_definitions(
     "dlongString=\"int\""
     "dlongFormat=\"%d\""
     "MPI_DLONG=MPI_INT"
-    "hlong=long long int"
-    "hlongString=\"long long int\""
-    "hlongFormat=\"%lld\""
-    "MPI_HLONG=MPI_LONG_LONG_INT"
+    "hlong=int"
+    "hlongString=\"int\""
+    "hlongFormat=\"%d\""
+    "MPI_HLONG=MPI_INT"
 )
 
 add_subdirectory(3rdParty)

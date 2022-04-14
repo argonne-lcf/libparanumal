@@ -73,8 +73,7 @@ advection_t& advection_t::Setup(platform_t& platform, mesh_t& mesh,
   int maxNodes = mymax(mesh.Np, (mesh.Nfp*mesh.Nfaces));
   kernelInfo["defines/" "p_maxNodes"]= maxNodes;
 
-  int blockMax = 256;
-  if (platform.device.mode() == "CUDA") blockMax = 512;
+  int blockMax = 1024;
 
   int NblockV = mymax(1, blockMax/mesh.Np);
   kernelInfo["defines/" "p_NblockV"]= NblockV;

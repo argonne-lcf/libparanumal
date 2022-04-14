@@ -69,7 +69,7 @@ void platform_t::DeviceProperties(){
     props["defines/" "dlong"]="int";
   }
   if(sizeof(dlong)==8){
-    props["defines/" "dlong"]="long long int";
+    props["defines/" "dlong"]="long";
   }
 
   if(device.mode()=="Serial") {
@@ -88,11 +88,13 @@ void platform_t::DeviceProperties(){
 
   if(device.mode()=="OpenCL"){ // add backend compiler optimization for OPENCL
     props["compiler_flags"] += " -cl-std=CL2.0 ";
-    props["compiler_flags"] += " -cl-strict-aliasing ";
     props["compiler_flags"] += " -cl-mad-enable ";
     props["compiler_flags"] += " -cl-no-signed-zeros ";
     props["compiler_flags"] += " -cl-unsafe-math-optimizations ";
     props["compiler_flags"] += " -cl-fast-relaxed-math ";
+    if(sizeof(dlong)==8){
+      props["defines/" "dlong"]="long";
+    }
   }
 
   if(device.mode()=="HIP"){ // add backend compiler optimization for HIP
@@ -100,5 +102,10 @@ void platform_t::DeviceProperties(){
     props["compiler_flags"] += " -ffp-contract=fast ";
     // props["compiler_flags"] += " -funsafe-math-optimizations ";
     // props["compiler_flags"] += " -ffast-math ";
+  }
+
+  if(device.mode()=="dpcpp") {
+    props["compiler_flags"] += " -O3 ";
+    props["compiler_flags"] += " -ffp-contract=fast ";
   }
 }

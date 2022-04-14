@@ -53,18 +53,18 @@ SOFTWARE.
 #endif
 
 //host index data type
-#if 0
+#if 1
 #define hlong int
 #define ogs_hlong ogs_int
 #define MPI_HLONG MPI_INT
 #define hlongFormat "%d"
 #define hlongString "int"
 #else
-#define hlong long long int
-#define ogs_hlong ogs_long_long
-#define MPI_HLONG MPI_LONG_LONG_INT
-#define hlongFormat "%lld"
-#define hlongString "long long int"
+#define hlong long
+#define ogs_hlong ogs_long
+#define MPI_HLONG MPI_LONG_INT
+#define hlongFormat "%ld"
+#define hlongString "long"
 #endif
 
 //device index data type

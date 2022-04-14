@@ -23,6 +23,7 @@ target_link_libraries(advection
 )
 
 target_compile_definitions(advection PUBLIC "LIBP_DIR=\"${CMAKE_INSTALL_PREFIX}\"")
+target_compile_definitions(advection PUBLIC "DADVECTION=\"${CMAKE_INSTALL_PREFIX}\"")
 
 install(TARGETS advection)
 install(DIRECTORY okl/ DESTINATION okl)

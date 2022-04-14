@@ -28,7 +28,7 @@ SOFTWARE.
 #include "linAlg.hpp"
 #include "platform.hpp"
 
-#define LINALG_BLOCKSIZE 512
+#define LINALG_BLOCKSIZE 1024
 
 linAlg_t::linAlg_t(): blocksize(LINALG_BLOCKSIZE) {};
 

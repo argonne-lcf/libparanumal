@@ -34,7 +34,7 @@ SOFTWARE.
 #include "timeStepper.hpp"
 #include "linAlg.hpp"
 
-#define DADVECTION LIBP_DIR"/solvers/advection/"
+// #define DADVECTION LIBP_DIR"/solvers/advection/"
 
 class advectionSettings_t: public settings_t {
 public:

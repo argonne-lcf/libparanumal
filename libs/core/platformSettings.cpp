@@ -38,7 +38,7 @@ platformSettings_t::platformSettings_t(MPI_Comm _comm):
   newSetting("THREAD MODEL",
              "CUDA",
              "OCCA's Parallel execution platform",
-             {"Serial", "OpenMP", "CUDA", "HIP", "OpenCL"});
+             {"Serial", "OpenMP", "CUDA", "HIP", "OpenCL","dpcpp"});
 
   newSetting("PLATFORM NUMBER",
              "0",
@@ -71,7 +71,8 @@ void platformSettings_t::report() {
     if ((size==1)
         &&(compareSetting("THREAD MODEL","CUDA")
         ||compareSetting("THREAD MODEL","HIP")
-        ||compareSetting("THREAD MODEL","OpenCL") ))
+        ||compareSetting("THREAD MODEL","OpenCL") 
+        ||compareSetting("THREAD MODEL", "dpcpp")))
       reportSetting("DEVICE NUMBER");
   }
 }
