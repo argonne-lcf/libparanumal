@@ -16,7 +16,7 @@ namespace benchmark {
   };
 
   template<typename T>
-  inline stats_t<T> calculateStatistics(std::vector<T>& dataset,int ntrials)
+  inline stats_t<T> calculateStatistics(std::vector<T>& dataset)
   {
     stats_t<T> s;
     std::sort(dataset.begin(), dataset.end());

@@ -8,6 +8,8 @@ enable_testing()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+# set(CMAKE_CXX_FLAGS "-g")
+# set(CMAKE_CXX_FLAGS "-pg")
 
 include(GNUInstallDirs)
 
@@ -18,7 +20,7 @@ find_package(LAPACK REQUIRED)
 option(EXTERNAL_OCCA "Use an external OCCA build" OFF)
 if(EXTERNAL_OCCA)
   message(STATUS "Using an external OCCA build.")
-  find_package(occa REQUIRED)
+  find_package(OCCA REQUIRED)
   set(OCCA_TARGET OCCA::libocca)
 else()
   message(FATAL_ERROR "Currently only external OCCA builds are enabled :(")
