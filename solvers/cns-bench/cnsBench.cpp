@@ -143,7 +143,7 @@ int main(int argc, char **argv)
   // Kernel setup
   occa::memory o_rhsq;
   o_rhsq = platform.malloc(NlocalFields*sizeof(dfloat));
-  occa::kernel benchmarkKernel;
+  occa::kernel baseline_kernel;
 
   char fileName[BUFSIZ], kernelName[BUFSIZ];
   if(iopt==1)
@@ -190,6 +190,11 @@ int main(int argc, char **argv)
       kernelInfo["okl/enabled"] = false;      
     }
     cns.gradSurfaceKernel = platform.buildKernel(fileName, kernelName, kernelInfo);
+
+    sprintf(kernelName, "cnsGradSurfaceHex3D");
+    sprintf(fileName, DCNS "/okl/cnsGradSurfaceHex3D.okl");
+    baseline_kernel = platform.buildKernel(fileName,kernelName,kernelInfo);
+
     int Nq = mesh.N + 1;
     occa::dim innerDims(Nq,Nq,tile_dim);
     occa::dim outerDims(Nelements/tile_dim);
@@ -286,7 +291,15 @@ int main(int argc, char **argv)
   }
 
   else {
+    // Obtaining result from baseline kernel
+    dfloat *baseline_result  = (dfloat*) calloc(NlocalGrads+NhaloGrads,sizeof(dfloat));
+    dfloat *optimized_result = (dfloat*) calloc(NlocalGrads+NhaloGrads,sizeof(dfloat));
+    baseline_kernel(mesh.Nelements,mesh.o_sgeo,mesh.o_LIFT,mesh.o_vmapM,mesh.o_vmapP,mesh.o_EToB,mesh.o_x,mesh.o_y,mesh.o_z,
+		    simulation_time,cns.mu,cns.gamma,cns.o_q,cns.o_gradq);
+    cns.o_gradq.copyTo(baseline_result);
+
     for(size_t trial{}; trial < 10; ++trial) {
+      cns.o_gradq.copyFrom(optimized_result);  // Resetting device memory to zero
       cns.gradSurfaceKernel(mesh.Nelements,
                             mesh.o_sgeo,
                             mesh.o_LIFT,
@@ -303,6 +316,9 @@ int main(int argc, char **argv)
                             cns.o_gradq);
       platform.device.finish();
     }
+    cns.o_gradq.copyTo(optimized_result);
+    if(benchmark::validate(baseline_result,optimized_result,NlocalGrads+NhaloGrads))
+       std::cout<<" Validation check passed...\n";
 
     for(size_t trial{}; trial < ntrials; ++trial) {
       auto start_time = std::chrono::high_resolution_clock::now();
