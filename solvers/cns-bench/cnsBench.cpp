@@ -128,6 +128,7 @@ int main(int argc, char **argv)
   occa::properties kernelInfo = mesh.props;
   string dataFileName = "cnsGaussian3D.h";
   kernelInfo["includes"] += dataFileName;
+  kernelInfo["defines/" "p_Nelements"] = mesh.Nelements + mesh.totalHaloPairs;
   kernelInfo["defines/" "p_Nfields"] = cns.Nfields;
   kernelInfo["defines/" "p_Ngrads"]  = cns.Ngrads;
 
@@ -179,26 +180,28 @@ int main(int argc, char **argv)
     // occa::dim outerDims(Nelements/tile_dim);
     // cns.volumeKernel.setRunDims(outerDims,innerDims);
   }
-  else
+  else if(iopt==3)
   {
-    sprintf(kernelName, "cnsGradSurfaceHex3D");
+    sprintf(kernelName, "cnsGradSurfaceHex3D_test");
     if (kernel_lang=="okl") {
-      sprintf(fileName, DCNS "/okl/cnsGradSurfaceHex3D.okl");
+      sprintf(fileName, "./okl/cnsGradSurfaceHex3D_test.okl");
     }
     else if (kernel_lang=="native") {
       sprintf(fileName, DCNS "/okl/cnsGradSurfaceHex3D.cpp");
       kernelInfo["okl/enabled"] = false;      
     }
     cns.gradSurfaceKernel = platform.buildKernel(fileName, kernelName, kernelInfo);
+    std::cout<<" Test kernel built ...\n";
 
     sprintf(kernelName, "cnsGradSurfaceHex3D");
     sprintf(fileName, DCNS "/okl/cnsGradSurfaceHex3D.okl");
     baseline_kernel = platform.buildKernel(fileName,kernelName,kernelInfo);
+    std::cout<<" Baseline kernel built ...\n";
 
-    int Nq = mesh.N + 1;
-    occa::dim innerDims(Nq,Nq,tile_dim);
-    occa::dim outerDims(Nelements/tile_dim);
-    cns.gradSurfaceKernel.setRunDims(outerDims,innerDims);
+    //int Nq = mesh.N + 1;
+    //occa::dim innerDims(Nq,Nq,tile_dim);
+    //occa::dim outerDims(Nelements/tile_dim);
+    //cns.gradSurfaceKernel.setRunDims(outerDims,innerDims);
   }
 
   dfloat simulation_time = 0.0;
@@ -206,6 +209,7 @@ int main(int argc, char **argv)
   // Run kernel and measure runtimes
   int ntrials = 1000;//std::atoi(argv[2]);
   std::vector<dfloat> walltimes(ntrials);
+  std::vector<dfloat> walltimes0(ntrials);
   if(iopt==1) {
     for(size_t trial{}; trial < 10; ++trial) {
       cns.surfaceKernel(mesh.Nelements,
@@ -297,6 +301,7 @@ int main(int argc, char **argv)
     baseline_kernel(mesh.Nelements,mesh.o_sgeo,mesh.o_LIFT,mesh.o_vmapM,mesh.o_vmapP,mesh.o_EToB,mesh.o_x,mesh.o_y,mesh.o_z,
 		    simulation_time,cns.mu,cns.gamma,cns.o_q,cns.o_gradq);
     cns.o_gradq.copyTo(baseline_result);
+    std::cout<<" Baseline kernel run ...\n";
 
     for(size_t trial{}; trial < 10; ++trial) {
       cns.o_gradq.copyFrom(optimized_result);  // Resetting device memory to zero
@@ -317,8 +322,18 @@ int main(int argc, char **argv)
       platform.device.finish();
     }
     cns.o_gradq.copyTo(optimized_result);
+    std::cout<<" Test kernel run ...\n";
     if(benchmark::validate(baseline_result,optimized_result,NlocalGrads+NhaloGrads))
        std::cout<<" Validation check passed...\n";
+
+    for(size_t trial{}; trial < ntrials; ++trial) {
+       auto start_time = std::chrono::high_resolution_clock::now();
+       baseline_kernel(mesh.Nelements,mesh.o_sgeo,mesh.o_LIFT,mesh.o_vmapM,mesh.o_vmapP,mesh.o_EToB,mesh.o_x,mesh.o_y,mesh.o_z,
+		       simulation_time,cns.mu,cns.gamma,cns.o_q,cns.o_gradq);
+       platform.device.finish();
+       auto finish_time = std::chrono::high_resolution_clock::now();
+       walltimes0[trial] = std::chrono::duration<dfloat,std::milli>(finish_time-start_time).count();
+    }
 
     for(size_t trial{}; trial < ntrials; ++trial) {
       auto start_time = std::chrono::high_resolution_clock::now();
@@ -343,6 +358,7 @@ int main(int argc, char **argv)
     }
   }
   
+  auto baseline_stats = benchmark::calculateStatistics(walltimes0);
   auto walltime_stats = benchmark::calculateStatistics(walltimes);
 
   // Print results
@@ -354,10 +370,10 @@ int main(int argc, char **argv)
   std::cout<<" - Polynomial degree  : "<<mesh.N<<std::endl;
   std::cout<<" - Number of trials   : "<<ntrials<<std::endl;
   std::cout<<" RUNTIME STATISTICS:\n";
-  std::cout<<" - Mean : "<<std::scientific<<walltime_stats.mean   <<" ms\n";
-  std::cout<<" - Min  : "<<std::scientific<<walltime_stats.min    <<" ms\n";
-  std::cout<<" - Max  : "<<std::scientific<<walltime_stats.max    <<" ms\n";
-  std::cout<<" - Stdv : "<<std::scientific<<walltime_stats.stddev <<" ms\n";
+  std::cout<<" - Mean : "<<std::scientific<<baseline_stats.mean  <<"  "<<walltime_stats.mean   <<" ms\n";
+  std::cout<<" - Min  : "<<std::scientific<<baseline_stats.min   <<"  "<<walltime_stats.min    <<" ms\n";
+  std::cout<<" - Max  : "<<std::scientific<<baseline_stats.max   <<"  "<<walltime_stats.max    <<" ms\n";
+  std::cout<<" - Stdv : "<<std::scientific<<baseline_stats.stddev<<"  "<<walltime_stats.stddev <<" ms\n";
   std::cout<<std::endl;
 
   // close down MPI
