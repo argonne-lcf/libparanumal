@@ -39,6 +39,7 @@ int main(int argc, char **argv)
   MPI_Init(&argc, &argv);
 
   MPI_Comm comm = MPI_COMM_WORLD;
+  int rank;
 
   if(argc<4)
     LIBP_ABORT(string("Usage: ./cnsBench kernel Ngrids Norder kernel_language"));
@@ -62,16 +63,18 @@ int main(int argc, char **argv)
 
   // set up platform
   platformSettings.changeSetting("THREAD MODEL","dpcpp");
+//  platformSettings.changeSetting("THREAD MODEL","CUDA");
   platform_t platform(platformSettings);
+  rank = platform.rank;
 
   // set up mesh
   meshSettings.changeSetting("MESH DIMENSION","3");	// 3D elements
   meshSettings.changeSetting("ELEMENT TYPE","12");	// Hex elements
   meshSettings.changeSetting("BOX BOUNDARY FLAG","-1");	// Periodic
   meshSettings.changeSetting("POLYNOMIAL DEGREE",Norder);
-  meshSettings.changeSetting("BOX NX",NX);
-  meshSettings.changeSetting("BOX NY",NX);
-  meshSettings.changeSetting("BOX NZ",NX);
+  meshSettings.changeSetting("BOX GLOBAL NX",NX);
+  meshSettings.changeSetting("BOX GLOBAL NY",NX);
+  meshSettings.changeSetting("BOX GLOBAL NZ",NX);
   mesh_t& mesh = mesh_t::Setup(platform, meshSettings, comm);
   //meshSettings.report();
   
@@ -362,19 +365,21 @@ int main(int argc, char **argv)
   auto walltime_stats = benchmark::calculateStatistics(walltimes);
 
   // Print results
-  std::cout<<" BENCHMARK:\n";
-  std::cout<<" - Kernel Name : "<<std::string(benchmark_kernel[iopt-1])<<std::endl;
-  std::cout<<" - Backend API : "<<platform.device.mode()<<std::endl;
-  std::cout<<" PARAMETERS :\n";
-  std::cout<<" - Number of elements : "<<mesh.Nelements<<std::endl;
-  std::cout<<" - Polynomial degree  : "<<mesh.N<<std::endl;
-  std::cout<<" - Number of trials   : "<<ntrials<<std::endl;
-  std::cout<<" RUNTIME STATISTICS:\n";
-  std::cout<<" - Mean : "<<std::scientific<<baseline_stats.mean  <<"  "<<walltime_stats.mean   <<" ms\n";
-  std::cout<<" - Min  : "<<std::scientific<<baseline_stats.min   <<"  "<<walltime_stats.min    <<" ms\n";
-  std::cout<<" - Max  : "<<std::scientific<<baseline_stats.max   <<"  "<<walltime_stats.max    <<" ms\n";
-  std::cout<<" - Stdv : "<<std::scientific<<baseline_stats.stddev<<"  "<<walltime_stats.stddev <<" ms\n";
-  std::cout<<std::endl;
+  if(rank==0) {
+    std::cout<<" BENCHMARK:\n";
+    std::cout<<" - Kernel Name : "<<std::string(benchmark_kernel[iopt-1])<<std::endl;
+    std::cout<<" - Backend API : "<<platform.device.mode()<<std::endl;
+    std::cout<<" PARAMETERS :\n";
+    std::cout<<" - Number of elements : "<<mesh.Nelements<<std::endl;
+    std::cout<<" - Polynomial degree  : "<<mesh.N<<std::endl;
+    std::cout<<" - Number of trials   : "<<ntrials<<std::endl;
+    std::cout<<" RUNTIME STATISTICS:\n";
+    std::cout<<" - Mean : "<<std::scientific<<baseline_stats.mean  <<"  "<<walltime_stats.mean   <<" ms\n";
+    std::cout<<" - Min  : "<<std::scientific<<baseline_stats.min   <<"  "<<walltime_stats.min    <<" ms\n";
+    std::cout<<" - Max  : "<<std::scientific<<baseline_stats.max   <<"  "<<walltime_stats.max    <<" ms\n";
+    std::cout<<" - Stdv : "<<std::scientific<<baseline_stats.stddev<<"  "<<walltime_stats.stddev <<" ms\n";
+    std::cout<<std::endl;
+  }
 
   // close down MPI
   MPI_Finalize();
