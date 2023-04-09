@@ -1,0 +1,249 @@
+void surfaceTerms(const int sk, const dfloat *x, const dfloat *y, const dfloat *z, 
+                  const dfloat time, const dfloat mu, const dfloat gamma, 
+		  const dfloat *sgeo, const dlong *EToB, const dfloat *q, const dfloat *qhalo, dfloat *gradq) {
+
+    const dfloat nx = sgeo[sk*p_Nsgeo+p_NXID];
+    const dfloat ny = sgeo[sk*p_Nsgeo+p_NYID];
+    const dfloat nz = sgeo[sk*p_Nsgeo+p_NZID];
+    const dfloat sJ = sgeo[sk*p_Nsgeo+p_SJID];
+    const dfloat invWJ = sgeo[sk*p_Nsgeo+p_WIJID];
+    
+    const dlong qid = sk*p_Nfields;
+    const dfloat rM  = q[qid + 0];
+    const dfloat ruM = q[qid + 1];
+    const dfloat rvM = q[qid + 2];
+    const dfloat rwM = q[qid + 3];
+
+    const dfloat uM = ruM/rM;
+    const dfloat vM = rvM/rM;
+    const dfloat wM = rwM/rM;
+
+    dfloat rP  = qhalo[qid + 0];
+    dfloat ruP = qhalo[qid + 1];
+    dfloat rvP = qhalo[qid + 2];
+    dfloat rwP = qhalo[qid + 3];
+
+    dfloat uP = ruP/rP;
+    dfloat vP = rvP/rP;
+    dfloat wP = rwP/rP;
+
+    const dlong e = sk/(p_Nfaces*p_Nfp);
+    const int face = (sk - e*p_Nfaces*p_Nfp)/p_Nfp;
+    const int bc = EToB[face+p_Nfaces*e];
+    if(bc>0) {
+	  const dfloat pM = gamma*gamma*rM;
+	  dfloat pP = gamma*gamma*rP;
+	  dfloat dudx = 0.f, dudy = 0.f, dudz = 0.f; //fake these values
+	  dfloat dvdx = 0.f, dvdy = 0.f, dvdz = 0.f; //fake these values
+	  dfloat dwdx = 0.f, dwdy = 0.f, dwdz = 0.f; //fake these values
+	  cnsBoundaryConditions3D(bc, gamma, mu, \
+						      time, x[idM], y[idM], z[idM], nx, ny, nz, \
+							  rM, uM, vM, wM, pM,
+							  0., 0., 0., 0., 0., 0., 0., 0., 0.,
+							  &rP, &uP, &vP, &wP, &pP,
+							  &dudx, &dudy, &dudz, &dvdx, &dvdy, &dvdz, &dwdx, &dwdy, &dwdz);
+    }
+
+    const dfloat sc = 0.5f*invWJ * sJ;
+    const dlong gid = sk*p_Ngrads;
+    gradq[gid+0] = sc*nx*(uP-uM);
+    gradq[gid+1] = sc*ny*(uP-uM);
+    gradq[gid+2] = sc*nz*(uP-uM);
+    gradq[gid+3] = sc*nx*(vP-vM);
+    gradq[gid+4] = sc*ny*(vP-vM);
+    gradq[gid+5] = sc*nz*(vP-vM);
+    gradq[gid+6] = sc*nx*(wP-wM);
+    gradq[gid+7] = sc*ny*(wP-wM);
+    gradq[gid+8] = sc*nz*(wP-wM);
+}
+
+// NsurfaceNodes = Nelements*p_Nfaces*p_Nfp;
+@kernel void surfacePack(const int Nelements,
+                        @restrict const int * vmapM,
+                        @restrict const int * vmapP,
+                        @restrict const dfloat *q,
+                        @restrict dfloat *qpack,
+                        @restrict dfloat *qhalo) {
+
+  for(dlong e=0;e<Nelements;++e;@outer(0)) {
+    for(int f=0;f<p_Nfaces;++f;@inner(2)) {
+      for(int j=0;j<p_Nq;++j;@inner(1)) {
+        for(int i=0;i<p_Nq;++i;@inner(0)) {
+          const dlong sid = e*p_Nfaces*p_Nfp + f*p_Nfp + j*p_Nq + i;
+		  
+          dlong vid = vmapM[sid]%p_Np;
+          dlong bid = e*p_Np*p_Nfields + vid;
+          const dlong qid = sid*p_Nfields;
+          
+          qpack[qid+0] = q[bid+0*p_Np];
+          qpack[qid+1] = q[bid+1*p_Np];
+          qpack[qid+2] = q[bid+2*p_Np];
+          qpack[qid+3] = q[bid+3*p_Np];
+          
+          // Identifying halo node
+          // This can be split into two out-of-order kernels or run simultaneously in two streams
+          vid = vmapP[sid];
+          const dlong eP = vid/p_Np;
+          vid = vid%p_Np;
+          
+          bid = eP*p_Np*p_Nfields + vid;
+          
+          qhalo[qid+0] = q[bid+0*p_Np];
+          qhalo[qid+1] = q[bid+1*p_Np];
+          qhalo[qid+2] = q[bid+2*p_Np];
+          qhalo[qid+3] = q[bid+3*p_Np];
+        }
+      }
+    }
+  }
+}
+
+@kernel void surfaceHalo(const int Nelements,
+                        @restrict const int * vmapM,
+                        @restrict const int * vmapP,
+                        @restrict const dfloat *q,
+                        @restrict dfloat *qpack,
+                        @restrict dfloat *qhalo) {
+
+  for(dlong e=0;e<Nelements;++e;@outer(0)) {
+    for(int f=0;f<p_Nfaces;++f;@inner(2)) {
+      for(int j=0;j<p_Nq;++j;@inner(1)) {
+        for(int i=0;i<p_Nq;++i;@inner(0)) {
+           const dlong sid = e*p_Nfaces*p_Nfp + f*p_Nfp + j*p_Nq + i;
+
+           const dlong qid = sid*p_Nfields;
+
+           // Identifying halo node
+           // This can be split into two out-of-order kernels or run simultaneously in two streams
+           dlong vid = vmapP[sid];
+           const dlong eP = vid/p_Np;
+           vid = vid%p_Np;
+
+           const dlong bid = eP*p_Np*p_Nfields + vid;
+
+           qhalo[qid+0] = q[bid+0*p_Np];
+           qhalo[qid+1] = q[bid+1*p_Np];
+           qhalo[qid+2] = q[bid+2*p_Np];
+           qhalo[qid+3] = q[bid+3*p_Np];
+
+        }
+      }
+    }
+  }
+}
+
+@kernel void surfaceUnpack(const int Nelements,
+                        @restrict const int * vmapM,
+                        @restrict const int * vmapP,
+                        @restrict const dfloat *gradq_pack,
+                        @restrict dfloat *gradq) {
+  
+  for(dlong e=0;e<Nelements;++e;@outer(0)) {
+    for(int f=0;f<p_Nfaces;++f;@inner(2)) {
+      for(int j=0;j<p_Nq;++j;@inner(1)) {
+        for(int i=0;i<p_Nq;++i;@inner(0)) {
+          const dlong sid = e*p_Nfaces*p_Nfp + f*p_Nfp + j*p_Nq + i;
+		  
+	  dlong vid = vmapM[sid]%p_Np;
+	  dlong bid = e*p_Np*p_Ngrads + vid;
+	  
+	  @atomic gradq[bid+0*p_Np] += gradq_pack[sid*p_Ngrads+0];
+	  @atomic gradq[bid+1*p_Np] += gradq_pack[sid*p_Ngrads+1];
+	  @atomic gradq[bid+2*p_Np] += gradq_pack[sid*p_Ngrads+2];
+	  @atomic gradq[bid+3*p_Np] += gradq_pack[sid*p_Ngrads+3];
+	  @atomic gradq[bid+4*p_Np] += gradq_pack[sid*p_Ngrads+4];
+	  @atomic gradq[bid+5*p_Np] += gradq_pack[sid*p_Ngrads+5];
+	  @atomic gradq[bid+6*p_Np] += gradq_pack[sid*p_Ngrads+6];
+	  @atomic gradq[bid+7*p_Np] += gradq_pack[sid*p_Ngrads+7];
+	  @atomic gradq[bid+8*p_Np] += gradq_pack[sid*p_Ngrads+8];
+	}
+      }
+    }
+  }
+}
+
+/*
+@kernel void surfaceUnpack(const int Nelements,
+                        @restrict const int * vmapM,
+                        @restrict const int * vmapP,
+                        @restrict const dfloat *gradq_pack,
+                        @restrict dfloat *gradq) {
+
+  for(dlong e=0;e<Nelements;++e;@outer(0)) {
+    for(int f=0;f<p_Nfaces;++f;@inner(2)) {
+      for(int j=0;j<p_Nq;++j;@inner(1)) {
+        for(int i=0;i<p_Nq;++i;@inner(0)) {
+          const dlong sid = e*p_Nfaces*p_Nfp + f*p_Nfp + j*p_Nq + i;
+
+          dlong vid = vmapM[sid]%p_Np;
+          dlong bid = e*p_Np*p_Ngrads + vid;
+
+          for(int g=0;g<p_Ngrads;++g) { 
+          @atomic  gradq[bid+g*p_Np] += gradq_pack[sid*p_Ngrads+g]; 
+          }
+
+        }
+      }
+    }
+  }
+}*/
+
+/*
+@kernel void surfaceUnpack(const int Nelements,
+                        @restrict const int * vmapM,
+                        @restrict const int * vmapP,
+                        @restrict const dfloat *gradq_pack,
+                        @restrict dfloat *gradq) {
+
+  for(dlong e=0;e<Nelements;++e;@outer(0)) {
+    for(int j=0;j<p_Nq;++j;@inner(2)) {
+      for(int i=0;i<p_Nq;++i;@inner(1)) {
+        for(int g=0;g<p_Ngrads;++g;@inner(0)) {
+    
+          const dlong nid = e*p_Nfaces*p_Nfp + j*p_Nq + i;
+          for(int f=0;f<p_Nfaces;++f) {
+            dlong sid = nid + f*p_Nfp;
+
+            dlong vid = vmapM[sid]%p_Np;
+            dlong bid = e*p_Np*p_Ngrads + vid;
+
+            @atomic gradq[bid+g*p_Np] += gradq_pack[sid*p_Ngrads+g];
+          }
+        }
+      }
+    }
+  }
+}*/
+
+@kernel void surfaceGrad(const int NsurfaceNodes,
+                         @restrict const dfloat * sgeo,
+			 @restrict const dfloat * LIFT,
+			 @restrict const int * vmapM,
+			 @restrict const int * vmapP,
+			 @restrict const int * EToB,
+			 @restrict const dfloat * x,
+			 @restrict const dfloat * y,
+			 @restrict const dfloat * z,
+			 const dfloat time,
+			 const dfloat mu,
+			 const dfloat gamma,
+			 @restrict const dfloat *qpack,
+			 @restrict dfloat * qhalo,
+			 @restrict dfloat * gradq) {
+
+/*   for(dlong e=0;e<Nelements;++e;@outer(0)) {
+	  for(int f=0;f<p_Nfaces;++f;@inner(3)) {
+		  for(int j=0;j<p_Nq;++j;@inner(2)) {
+			  for(int i=0;i<p_Nq;++i;inner(1)) {
+				  // dlong sk = e*p_Nfaces
+			  }
+		  }
+	  }
+  } */
+  
+  const int block_size = 64;
+  for(dlong e=0;e<NsurfaceNodes;++e; @tile(64,@outer,@inner)) {
+    surfaceTerms(e, x, y, z, time, mu, gamma, sgeo, EToB, qpack, qhalo, gradq);
+  }
+
+}

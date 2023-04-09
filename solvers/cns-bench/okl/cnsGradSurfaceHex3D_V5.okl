@@ -41,61 +41,60 @@ void surfaceTerms(const int e,
                   const dlong *vmapP,
                   const dlong *EToB,
                   const dfloat *q,
-                  dfloat *sq,
                   dfloat *gradq){
 
   const dfloat nx = sgeo[sk*p_Nsgeo+p_NXID];
   const dfloat ny = sgeo[sk*p_Nsgeo+p_NYID];
   const dfloat nz = sgeo[sk*p_Nsgeo+p_NZID];
-  const dfloat sJ = sgeo[sk*p_Nsgeo+p_SJID];
-  const dfloat invWJ = sgeo[sk*p_Nsgeo+p_WIJID];
+  //const dfloat sJ = sgeo[sk*p_Nsgeo+p_SJID];
+  //const dfloat invWJ = sgeo[sk*p_Nsgeo+p_WIJID];
 
-  const dlong idM = vmapM[sk];
-  const dlong idP = vmapP[sk];
+  // Negative trace quantities
+  dlong id = vmapM[sk];
+  dlong elem = e;
+  int vid = id%p_Np;
+  dlong base = elem*p_Np*p_Nfields + vid;
 
-  const dlong eM = e%p_NblockS;
-  const dlong eP = idP/p_Np;
-  const int vidM = idM%p_Np;
-  const int vidP = idP%p_Np;
+  dfloat rM = q[base + 0*p_Np];
 
-  const dlong baseM = eM*p_Np*p_Nfields + vidM;
-  const dlong baseP = eP*p_Np*p_Nfields + vidP;
+  dfloat uM = q[base + 1*p_Np]/rM;
+  dfloat vM = q[base + 2*p_Np]/rM;
+  dfloat wM = q[base + 3*p_Np]/rM;
 
-  const dfloat rM  = sq[baseM + 0*p_Np];
-  const dfloat ruM = sq[baseM + 1*p_Np];
-  const dfloat rvM = sq[baseM + 2*p_Np];
-  const dfloat rwM = sq[baseM + 3*p_Np];
+  // Positive trace quantities
+  id = vmapP[sk];
+  elem = id/p_Np;
+  vid = id%p_Np;
+  base = elem*p_Np*p_Nfields + vid;
 
-  dfloat uM = ruM/rM;
-  dfloat vM = rvM/rM;
-  dfloat wM = rwM/rM;
+  dfloat rP = q[base + 0*p_Np];
 
-  dfloat rP  = q[baseP + 0*p_Np];
-  dfloat ruP = q[baseP + 1*p_Np];
-  dfloat rvP = q[baseP + 2*p_Np];
-  dfloat rwP = q[baseP + 3*p_Np];
-
-  dfloat uP = ruP/rP;
-  dfloat vP = rvP/rP;
-  dfloat wP = rwP/rP;
+  dfloat uP = q[base+1*p_Np]/rP;
+  dfloat vP = q[base+2*p_Np]/rP;
+  dfloat wP = q[base+3*p_Np]/rP;
 
   const int bc = EToB[face+p_Nfaces*e];
   if(bc>0) {
     const dfloat pM = gamma*gamma*rM;
     dfloat pP = gamma*gamma*rP;
-    dfloat dudx = 0.f, dudy = 0.f, dudz = 0.f; //fake these values
-    dfloat dvdx = 0.f, dvdy = 0.f, dvdz = 0.f; //fake these values
-    dfloat dwdx = 0.f, dwdy = 0.f, dwdz = 0.f; //fake these values
-    cnsBoundaryConditions3D(bc, gamma, mu, \
-                            time, x[idM], y[idM], z[idM], nx, ny, nz, \
-                            rM, uM, vM, wM, pM,
-                            0., 0., 0., 0., 0., 0., 0., 0., 0.,
-                            &rP, &uP, &vP, &wP, &pP,
-                            &dudx, &dudy, &dudz, &dvdx, &dvdy, &dvdz, &dwdx, &dwdy, &dwdz);
+    cnsBoundaryConditions3Dmod(bc, nx, ny, nz, \
+                               rM, uM, vM, wM, pM,
+                              &rP,&uP,&vP,&wP,&pP);
+
+    //dfloat dudx = 0.f, dudy = 0.f, dudz = 0.f; //fake these values
+    //dfloat dvdx = 0.f, dvdy = 0.f, dvdz = 0.f; //fake these values
+    //dfloat dwdx = 0.f, dwdy = 0.f, dwdz = 0.f; //fake these values
+    //cnsBoundaryConditions3D(bc, gamma, mu, \
+    //                        time, x[idM], y[idM], z[idM], nx, ny, nz, \
+    //                        rM, uM, vM, wM, pM,
+    //                        0., 0., 0., 0., 0., 0., 0., 0., 0.,
+    //                        &rP, &uP, &vP, &wP, &pP,
+    //                        &dudx, &dudy, &dudz, &dvdx, &dvdy, &dvdz, &dwdx, &dwdy, &dwdz);
   }
 
-  const dfloat sc = 0.5f*invWJ * sJ;
-  const dlong base = e*p_Np*p_Ngrads+k*p_Nq*p_Nq+j*p_Nq+i;
+  //const dfloat sc = 0.5f*invWJ * sJ;
+  const dfloat sc = 0.5f*sgeo[sk*p_Nsgeo+p_WIJID]*sgeo[sk*p_Nsgeo+p_SJID];
+  base = e*p_Np*p_Ngrads+k*p_Nq*p_Nq+j*p_Nq+i;
   gradq[base+0*p_Np] += sc*nx*(uP-uM);
   gradq[base+1*p_Np] += sc*ny*(uP-uM);
   gradq[base+2*p_Np] += sc*nz*(uP-uM);
@@ -107,7 +106,7 @@ void surfaceTerms(const int e,
   gradq[base+8*p_Np] += sc*nz*(wP-wM);
 }
 
-@kernel void cnsGradSurfaceHex3D_test(const int Nelements,
+@kernel void cnsGradSurfaceHex3D_V5(const int Nelements,
                                  @restrict const  dfloat *  sgeo,
                                  @restrict const  dfloat *  LIFT,
                                  @restrict const  int    *  vmapM,
@@ -125,28 +124,6 @@ void surfaceTerms(const int e,
   // for all elements
   for(dlong eo=0;eo<Nelements;eo+=p_NblockS;@outer(0)){
 
-    // Copying q to shared memory
-    @shared dfloat s_q[p_NblockS*p_Np*p_Nfields];
-    for(int es=0;es<p_NblockS;++es;@inner(2)) {
-      for(int i=0;i<p_Nq;++i;@inner(1)) {
-        for(int j=0;j<p_Nq;++j;@inner(0)) {
-          const dlong e = eo + es;
-          if(e<Nelements) {
-            dlong sbase = 0.0; //es*p_Np*p_Nfields + k*p_Nq*p_Nq + j*p_Nq;
-            dlong base = 0.0; //e*p_Np*p_Nfields + k*p_Nq*p_Nq + j*p_Nq;
-            for(int k = 0;k<p_Nq;++k) {
-              sbase = es*p_Np*p_Nfields + k*p_Nq*p_Nq + j*p_Nq;
-              base = e*p_Np*p_Nfields + k*p_Nq*p_Nq + j*p_Nq;
-              s_q[sbase+i+0*p_Np] = q[base+i+0*p_Np];
-              s_q[sbase+i+1*p_Np] = q[base+i+1*p_Np];
-              s_q[sbase+i+2*p_Np] = q[base+i+2*p_Np];
-              s_q[sbase+i+3*p_Np] = q[base+i+3*p_Np];
-            }
-          }
-        }
-      }
-    }
-
     // for all face nodes of all elements
     // face 0 & 5
     for(int es=0;es<p_NblockS;++es;@inner(2)){
@@ -159,15 +136,17 @@ void surfaceTerms(const int e,
 
             //            surfaceTerms(sk0,0,i,j,0     );
             surfaceTerms(e, sk0, 0, i, j, 0,
-                         x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, s_q, gradq);
+                         x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq);
 
             //            surfaceTerms(sk5,5,i,j,(p_Nq-1));
             surfaceTerms(e, sk5, 5, i, j, (p_Nq-1),
-                         x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, s_q, gradq);
+                         x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq);
           }
         }
       }
     }
+
+    @barrier;
 
     // face 1 & 3
     for(int es=0;es<p_NblockS;++es;@inner(2)){
@@ -180,16 +159,18 @@ void surfaceTerms(const int e,
 
             //            surfaceTerms(sk1,1,i,0     ,k);
             surfaceTerms(e, sk1, 1, i, 0, k,
-                         x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, s_q, gradq);
+                         x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq);
 
             //surfaceTerms(sk3,3,i,(p_Nq-1),k);
             surfaceTerms(e, sk3, 3, i, (p_Nq-1), k,
-                         x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, s_q, gradq);
+                         x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq);
 
           }
         }
       }
     }
+
+    @barrier;
 
     // face 2 & 4
     for(int es=0;es<p_NblockS;++es;@inner(2)){
@@ -202,11 +183,11 @@ void surfaceTerms(const int e,
 
             //            surfaceTerms(sk2,2,(p_Nq-1),j ,k);
             surfaceTerms(e, sk2, 2, (p_Nq-1), j, k,
-                         x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, s_q, gradq);
+                         x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq);
 
             //surfaceTerms(sk4,4,0,     j, k);
             surfaceTerms(e, sk4, 4, 0, j, k,
-                         x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, s_q, gradq);
+                         x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq);
           }
         }
       }

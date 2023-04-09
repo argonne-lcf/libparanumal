@@ -30,7 +30,7 @@ meshSettings_t::meshSettings_t(MPI_Comm& _comm):
   settings_t(_comm) {
 
   newSetting("MESH FILE",
-             "BOX"
+             "BOX",
              "Input mesh. Can set to BOX to instead construct a uniform mesh");
   newSetting("MESH DIMENSION",
              "2",

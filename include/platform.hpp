@@ -61,7 +61,7 @@ public:
     MPI_Comm_rank(comm, &rank);
     MPI_Comm_size(comm, &size);
 
-    if (rank==0) {
+    /*if (rank==0) {
       std::cout << "\n";
       std::cout << "\033[1m";
       std::cout << " _ _ _     ____                                             _ \n";
@@ -75,7 +75,7 @@ public:
       std::cout << "Contributing developers: Noel Chalmers, Ali Karakus, Kasia Swirydowicz,\n";
       std::cout << "                         Anthony Austin, & Tim Warburton\n";
       std::cout << "\n";
-    }
+    }*/
 
     DeviceConfig();
     DeviceProperties();

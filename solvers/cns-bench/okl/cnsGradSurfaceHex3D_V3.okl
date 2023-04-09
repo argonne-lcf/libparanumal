@@ -24,9 +24,10 @@ SOFTWARE.
 
 */
 
-void surfaceTerms_v2(const int e,
+void surfaceTerms_v3(const int e,
                   const int sk,
                   const int face,
+                  const dlong base,
                   const int i,
                   const int j,
                   const int k,
@@ -41,7 +42,7 @@ void surfaceTerms_v2(const int e,
                   const dlong *vmapP,
                   const dlong *EToB,
                   const dfloat *q,
-                  dfloat *gradq){
+                  dfloat *sgradq){
 
   const dfloat nx = sgeo[sk*p_Nsgeo+p_NXID];
   const dfloat ny = sgeo[sk*p_Nsgeo+p_NYID];
@@ -94,19 +95,19 @@ void surfaceTerms_v2(const int e,
   }
 
   const dfloat sc = 0.5f*invWJ * sJ;
-  const dlong base = e*p_Np*p_Ngrads+k*p_Nq*p_Nq+j*p_Nq+i;
-  gradq[base+0*p_Np] += sc*nx*(uP-uM);
-  gradq[base+1*p_Np] += sc*ny*(uP-uM);
-  gradq[base+2*p_Np] += sc*nz*(uP-uM);
-  gradq[base+3*p_Np] += sc*nx*(vP-vM);
-  gradq[base+4*p_Np] += sc*ny*(vP-vM);
-  gradq[base+5*p_Np] += sc*nz*(vP-vM);
-  gradq[base+6*p_Np] += sc*nx*(wP-wM);
-  gradq[base+7*p_Np] += sc*ny*(wP-wM);
-  gradq[base+8*p_Np] += sc*nz*(wP-wM);
+  // const dlong base = e*p_Np*p_Ngrads+k*p_Nq*p_Nq+j*p_Nq+i;
+  sgradq[base+0] = sc*nx*(uP-uM);
+  sgradq[base+1] = sc*ny*(uP-uM);
+  sgradq[base+2] = sc*nz*(uP-uM);
+  sgradq[base+3] = sc*nx*(vP-vM);
+  sgradq[base+4] = sc*ny*(vP-vM);
+  sgradq[base+5] = sc*nz*(vP-vM);
+  sgradq[base+6] = sc*nx*(wP-wM);
+  sgradq[base+7] = sc*ny*(wP-wM);
+  sgradq[base+8] = sc*nz*(wP-wM);
 }
 
-@kernel void cnsGradSurfaceHex3D_V2(const int Nelements,
+@kernel void cnsGradSurfaceHex3D_V3(const int Nelements,
                                  @restrict const  dfloat *  sgeo,
                                  @restrict const  dfloat *  LIFT,
                                  @restrict const  int    *  vmapM,
@@ -124,45 +125,87 @@ void surfaceTerms_v2(const int e,
   // for all elements
   for(dlong eo=0;eo<Nelements;eo+=p_NblockS;@outer(0)){
 
+    // p_Nfp = No. of nodes per face = (Nq*Nq)
+    @shared dfloat s_gradq[p_NblockS*p_Nfaces*p_Nfp*p_Ngrads];   // Number of grads per element/workgroup
+
     // for all face nodes of all elements
     for(int es=0;es<p_NblockS;++es;@inner(2)){
       for(int j=0;j<p_Nq;++j;@inner(1)){
         for(int i=0;i<p_Nq;++i;@inner(0)){
           const dlong e = eo + es;
+          dlong sbase = (es*p_Nfp*p_Nfaces + j*p_Nq + i)*p_Ngrads;
+          dlong sk = e*p_Nfp*p_Nfaces + j*p_Nq + i;
           if(e<Nelements){
             // face 0 & 5
             dlong sk1 = e*p_Nfp*p_Nfaces + 0*p_Nfp + j*p_Nq + i;
             dlong sk2 = e*p_Nfp*p_Nfaces + 5*p_Nfp + j*p_Nq + i;
 
-            surfaceTerms_v2(e, sk1, 0, i, j, 0       , x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq);
-            surfaceTerms_v2(e, sk2, 5, i, j, (p_Nq-1), x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq);
-          }
-
-            @barrier;
+            surfaceTerms_v3(e, sk1, 0, sbase+0*p_Nfp*p_Ngrads, i, j, 0       , x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, s_gradq);
+            surfaceTerms_v3(e, sk2, 5, sbase+5*p_Nfp*p_Ngrads, i, j, (p_Nq-1), x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, s_gradq);
 
             // face 1 & 3
-          if(e<Nelements){
-            dlong sk1 = e*p_Nfp*p_Nfaces + 1*p_Nfp + j*p_Nq + i;
-            dlong sk2 = e*p_Nfp*p_Nfaces + 3*p_Nfp + j*p_Nq + i;
+            sk1 = e*p_Nfp*p_Nfaces + 1*p_Nfp + j*p_Nq + i;
+            sk2 = e*p_Nfp*p_Nfaces + 3*p_Nfp + j*p_Nq + i;
 
-            surfaceTerms_v2(e, sk1, 1, i, 0       , j, x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq);
-            surfaceTerms_v2(e, sk2, 3, i, (p_Nq-1), j, x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq);
-          }
-
-            @barrier;
+            surfaceTerms_v3(e, sk1, 1, sbase+1*p_Nfp*p_Ngrads, i, 0       , j, x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, s_gradq);
+            surfaceTerms_v3(e, sk2, 3, sbase+3*p_Nfp*p_Ngrads, i, (p_Nq-1), j, x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, s_gradq);
 
             // face 2 & 4
-          if(e<Nelements){
-            dlong sk1 = e*p_Nfp*p_Nfaces + 2*p_Nfp + j*p_Nq + i;
-            dlong sk2 = e*p_Nfp*p_Nfaces + 4*p_Nfp + j*p_Nq + i;
+            sk1 = e*p_Nfp*p_Nfaces + 2*p_Nfp + j*p_Nq + i;
+            sk2 = e*p_Nfp*p_Nfaces + 4*p_Nfp + j*p_Nq + i;
 
-            surfaceTerms_v2(e, sk1, 2, (p_Nq-1), i, j, x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq);
-            surfaceTerms_v2(e, sk2, 4, 0       , i, j, x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq);
+            surfaceTerms_v3(e, sk1, 2, sbase+2*p_Nfp*p_Ngrads, (p_Nq-1), i, j, x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, s_gradq);
+            surfaceTerms_v3(e, sk2, 4, sbase+4*p_Nfp*p_Ngrads, 0       , i, j, x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, s_gradq);
           }
-
         }
       }
     }
+    // @barrier;
 
-  }
+
+    // Alternate approach
+    for(int es=0;es<p_NblockS;++es;@inner(1)) {
+      for(int l=0;l<p_Ngrads;++l;@inner(0)) {
+        dlong e = es + eo;
+        if(e<Nelements) {
+        // Update the face nodes in serial
+        for(int j=0;j<p_Nq;++j) {
+          for(int i=0;i<p_Nq;++i) {
+            // Face 0
+            dlong base = e*p_Np*p_Ngrads + 0*p_Nq*p_Nq + j*p_Nq + i;
+            dlong sbase = (es*p_Nfp*p_Nfaces + 0*p_Nfp + j*p_Nq + i)*p_Ngrads;
+            gradq[base+l*p_Np] += sgradq[sbase+l]; // Do this for all gradients
+            
+            // Face 5
+            base = e*p_Np*p_Ngrads + (p_Nq-1)*p_Nq*p_Nq + j*p_Nq + i;
+            sbase = (es*p_Nfp*p_Nfaces + 5*p_Nfp + j*p_Nq + i)*p_Ngrads;
+            gradq[base+l*p_Np] += sgradq[sbase+l];
+
+            // Face 1
+            base = e*p_Np*p_Ngrads + j*p_Nq*p_Nq + 0*p_Nq + i;
+            sbase = (es*p_Nfp*p_Nfaces + 1*p_Nfp + j*p_Nq + i)*p_Ngrads;
+            gradq[base+l*p_Np] += sgradq[sbase+l];
+
+            // Face 3
+            base = e*p_Np*p_Ngrads + j*p_Nq*p_Nq + (p_Nq-1)*p_Nq + i;
+            sbase = (es*p_Nfp*p_Nfaces + 3*p_Nfp + j*p_Nq + i)*p_Ngrads;
+            gradq[base+l*p_Np] += sgradq[sbase+l];
+
+            // Face 2
+            base = e*p_Np*p_Ngrads + j*p_Nq*p_Nq + i*p_Nq + 0;
+            sbase = (es*p_Nfp*p_Nfaces + 2*p_Nfp + j*p_Nq + i)*p_Ngrads;
+            gradq[base+l*p_Np] += sgradq[sbase+l];
+
+            // Face 4
+            base = e*p_Np*p_Ngrads + j*p_Nq*p_Nq + i*p_Nq + (p_Nq-1);
+            sbase = (es*p_Nfp*p_Nfaces + 4*p_Nfp + j*p_Nq + i)*p_Ngrads;
+            gradq[base+l*p_Np] += sgradq[sbase+l];
+          }
+        } // i-j loop over surface nodes
+        } // if e<Nelements
+      }
+    }
+
+  } // Outer loop eo
 }
+

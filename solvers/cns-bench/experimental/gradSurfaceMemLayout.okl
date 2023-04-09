@@ -24,7 +24,7 @@ SOFTWARE.
 
 */
 
-void surfaceTerms_v2(const int e,
+void surfaceTerms(const int e,
                   const int sk,
                   const int face,
                   const int i,
@@ -40,8 +40,8 @@ void surfaceTerms_v2(const int e,
                   const dlong *vmapM,
                   const dlong *vmapP,
                   const dlong *EToB,
-                  const dfloat *q,
-                  dfloat *gradq){
+                  const dfloat *q0, const dfloat *q1, const dfloat *q2,const dfloat *q3,
+                  dfloat *gradq0, dfloat *gradq1, dfloat *gradq2,dfloat *gradq3,dfloat *gradq4,dfloat *gradq5,dfloat *gradq6,dfloat *gradq7,dfloat *gradq8){
 
   const dfloat nx = sgeo[sk*p_Nsgeo+p_NXID];
   const dfloat ny = sgeo[sk*p_Nsgeo+p_NYID];
@@ -57,22 +57,22 @@ void surfaceTerms_v2(const int e,
   const int vidM = idM%p_Np;
   const int vidP = idP%p_Np;
 
-  const dlong baseM = eM*p_Np*p_Nfields + vidM;
-  const dlong baseP = eP*p_Np*p_Nfields + vidP;
+  const dlong baseM = eM*p_Np + vidM;
+  const dlong baseP = eP*p_Np + vidP;
 
-  const dfloat rM  = q[baseM + 0*p_Np];
-  const dfloat ruM = q[baseM + 1*p_Np];
-  const dfloat rvM = q[baseM + 2*p_Np];
-  const dfloat rwM = q[baseM + 3*p_Np];
+  const dfloat rM  = q0[baseM];
+  const dfloat ruM = q1[baseM];
+  const dfloat rvM = q2[baseM];
+  const dfloat rwM = q3[baseM];
 
   dfloat uM = ruM/rM;
   dfloat vM = rvM/rM;
   dfloat wM = rwM/rM;
 
-  dfloat rP  = q[baseP + 0*p_Np];
-  dfloat ruP = q[baseP + 1*p_Np];
-  dfloat rvP = q[baseP + 2*p_Np];
-  dfloat rwP = q[baseP + 3*p_Np];
+  dfloat rP  = q0[baseP];
+  dfloat ruP = q1[baseP];
+  dfloat rvP = q2[baseP];
+  dfloat rwP = q3[baseP];
 
   dfloat uP = ruP/rP;
   dfloat vP = rvP/rP;
@@ -94,19 +94,19 @@ void surfaceTerms_v2(const int e,
   }
 
   const dfloat sc = 0.5f*invWJ * sJ;
-  const dlong base = e*p_Np*p_Ngrads+k*p_Nq*p_Nq+j*p_Nq+i;
-  gradq[base+0*p_Np] += sc*nx*(uP-uM);
-  gradq[base+1*p_Np] += sc*ny*(uP-uM);
-  gradq[base+2*p_Np] += sc*nz*(uP-uM);
-  gradq[base+3*p_Np] += sc*nx*(vP-vM);
-  gradq[base+4*p_Np] += sc*ny*(vP-vM);
-  gradq[base+5*p_Np] += sc*nz*(vP-vM);
-  gradq[base+6*p_Np] += sc*nx*(wP-wM);
-  gradq[base+7*p_Np] += sc*ny*(wP-wM);
-  gradq[base+8*p_Np] += sc*nz*(wP-wM);
+  const dlong base = e*p_Np+k*p_Nq*p_Nq+j*p_Nq+i;
+  gradq0[base] += sc*nx*(uP-uM);
+  gradq1[base] += sc*ny*(uP-uM);
+  gradq2[base] += sc*nz*(uP-uM);
+  gradq3[base] += sc*nx*(vP-vM);
+  gradq4[base] += sc*ny*(vP-vM);
+  gradq5[base] += sc*nz*(vP-vM);
+  gradq6[base] += sc*nx*(wP-wM);
+  gradq7[base] += sc*ny*(wP-wM);
+  gradq8[base] += sc*nz*(wP-wM);
 }
 
-@kernel void cnsGradSurfaceHex3D_V2(const int Nelements,
+@kernel void surfaceGrad(const int Nelements,
                                  @restrict const  dfloat *  sgeo,
                                  @restrict const  dfloat *  LIFT,
                                  @restrict const  int    *  vmapM,
@@ -118,51 +118,82 @@ void surfaceTerms_v2(const int e,
                                  const dfloat time,
                                  const dfloat mu,
                                  const dfloat gamma,
-                                 @restrict const  dfloat *  q,
-                                 @restrict dfloat *  gradq){
+                                 @restrict const  dfloat *  q0, @restrict const  dfloat *  q1,@restrict const  dfloat *  q2,@restrict const  dfloat *  q3,
+                                 @restrict dfloat * gradq0,@restrict dfloat * gradq1,@restrict dfloat * gradq2,@restrict dfloat * gradq3,
+                                 @restrict dfloat * gradq4,@restrict dfloat * gradq5,@restrict dfloat * gradq6,@restrict dfloat * gradq7,@restrict dfloat * gradq8){
 
   // for all elements
   for(dlong eo=0;eo<Nelements;eo+=p_NblockS;@outer(0)){
 
     // for all face nodes of all elements
+    // face 0 & 5
     for(int es=0;es<p_NblockS;++es;@inner(2)){
       for(int j=0;j<p_Nq;++j;@inner(1)){
         for(int i=0;i<p_Nq;++i;@inner(0)){
           const dlong e = eo + es;
           if(e<Nelements){
-            // face 0 & 5
-            dlong sk1 = e*p_Nfp*p_Nfaces + 0*p_Nfp + j*p_Nq + i;
-            dlong sk2 = e*p_Nfp*p_Nfaces + 5*p_Nfp + j*p_Nq + i;
+            const dlong sk0 = e*p_Nfp*p_Nfaces + 0*p_Nfp + j*p_Nq + i;
+            const dlong sk5 = e*p_Nfp*p_Nfaces + 5*p_Nfp + j*p_Nq + i;
 
-            surfaceTerms_v2(e, sk1, 0, i, j, 0       , x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq);
-            surfaceTerms_v2(e, sk2, 5, i, j, (p_Nq-1), x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq);
+            //            surfaceTerms(sk0,0,i,j,0     );
+            surfaceTerms(e, sk0, 0, i, j, 0,
+                         x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q0,q1,q2,q3,gradq0,gradq1,gradq2,gradq3,gradq4,gradq5,gradq6,gradq7,gradq8);
+
+            //            surfaceTerms(sk5,5,i,j,(p_Nq-1));
+            surfaceTerms(e, sk5, 5, i, j, (p_Nq-1),
+                         x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q0,q1,q2,q3,gradq0,gradq1,gradq2,gradq3,gradq4,gradq5,gradq6,gradq7,gradq8);
           }
-
-            @barrier;
-
-            // face 1 & 3
-          if(e<Nelements){
-            dlong sk1 = e*p_Nfp*p_Nfaces + 1*p_Nfp + j*p_Nq + i;
-            dlong sk2 = e*p_Nfp*p_Nfaces + 3*p_Nfp + j*p_Nq + i;
-
-            surfaceTerms_v2(e, sk1, 1, i, 0       , j, x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq);
-            surfaceTerms_v2(e, sk2, 3, i, (p_Nq-1), j, x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq);
-          }
-
-            @barrier;
-
-            // face 2 & 4
-          if(e<Nelements){
-            dlong sk1 = e*p_Nfp*p_Nfaces + 2*p_Nfp + j*p_Nq + i;
-            dlong sk2 = e*p_Nfp*p_Nfaces + 4*p_Nfp + j*p_Nq + i;
-
-            surfaceTerms_v2(e, sk1, 2, (p_Nq-1), i, j, x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq);
-            surfaceTerms_v2(e, sk2, 4, 0       , i, j, x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq);
-          }
-
         }
       }
     }
 
+    // face 1 & 3
+    for(int es=0;es<p_NblockS;++es;@inner(2)){
+      for(int k=0;k<p_Nq;++k;@inner(1)){
+        for(int i=0;i<p_Nq;++i;@inner(0)){
+          const dlong e = eo + es;
+          if(e<Nelements){
+            const dlong sk1 = e*p_Nfp*p_Nfaces + 1*p_Nfp + k*p_Nq + i;
+            const dlong sk3 = e*p_Nfp*p_Nfaces + 3*p_Nfp + k*p_Nq + i;
+
+            //            surfaceTerms(sk1,1,i,0     ,k);
+            surfaceTerms(e, sk1, 1, i, 0, k,
+                         x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q0,q1,q2,q3,gradq0,gradq1,gradq2,gradq3,gradq4,gradq5,gradq6,gradq7,gradq8);
+
+            //surfaceTerms(sk3,3,i,(p_Nq-1),k);
+            surfaceTerms(e, sk3, 3, i, (p_Nq-1), k,
+                         x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q0,q1,q2,q3,gradq0,gradq1,gradq2,gradq3,gradq4,gradq5,gradq6,gradq7,gradq8);
+
+          }
+        }
+      }
+    }
+
+    // face 2 & 4
+    for(int es=0;es<p_NblockS;++es;@inner(2)){
+      for(int k=0;k<p_Nq;++k;@inner(1)){
+        for(int j=0;j<p_Nq;++j;@inner(0)){
+          const dlong e = eo + es;
+          if(e<Nelements){
+            const dlong sk2 = e*p_Nfp*p_Nfaces + 2*p_Nfp + k*p_Nq + j;
+            const dlong sk4 = e*p_Nfp*p_Nfaces + 4*p_Nfp + k*p_Nq + j;
+
+            //            surfaceTerms(sk2,2,(p_Nq-1),j ,k);
+            surfaceTerms(e, sk2, 2, (p_Nq-1), j, k,
+                         x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q0,q1,q2,q3,gradq0,gradq1,gradq2,gradq3,gradq4,gradq5,gradq6,gradq7,gradq8);
+
+            //surfaceTerms(sk4,4,0,     j, k);
+            surfaceTerms(e, sk4, 4, 0, j, k,
+                         x, y, z, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q0,q1,q2,q3,gradq0,gradq1,gradq2,gradq3,gradq4,gradq5,gradq6,gradq7,gradq8);
+          }
+        }
+      }
+    }
   }
 }
+
+
+
+
+
+
