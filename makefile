@@ -225,6 +225,7 @@ info:
 	$(info LIBP_DIR  = $(LIBP_DIR))
 	$(info LIBP_ARCH = $(LIBP_ARCH))
 	$(info CXXFLAGS  = $(CXXFLAGS))
+	$(info LIBP_CXXFLAGS = $(LIBP_CXXFLAGS))
 	@true
 
 test: all
