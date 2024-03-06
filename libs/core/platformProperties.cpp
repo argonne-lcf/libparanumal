@@ -79,7 +79,9 @@ void platform_t::DeviceProperties(){
   if(device.mode()=="Serial") {
     Props["compiler_flags"] += "-O3 ";
     Props["compiler_flags"] += "-g "; //debugging
+    Props["serial/include_std"] = true;
     Props["defines/OCCA_USE_SERIAL"] = 1;
+
   }
 
   if(device.mode()=="CUDA"){ // add backend compiler optimization for CUDA
