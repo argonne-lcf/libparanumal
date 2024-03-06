@@ -112,10 +112,10 @@ void platform_t::DeviceProperties(){
     Props["defines/OCCA_USE_HIP"] = 1;
   }
 
-  if(device.mode()=="DPCPP"){ // add backend compiler optimization for DPC++
+  if(device.mode()=="dpcpp"){ // add backend compiler optimization for DPC++
     Props["compiler_flags"] += " -O3 ";
-    Props["compiler_flags"] += " -ffp-contract-fast ";
-    Props["compiler_flags"] += " -fsycl-targets=intel_gpu_pvc -fdebug-info-for-profiling -gline-tables-only "; // Debug flags for profiling
+    Props["compiler_flags"] += " -fsycl -fsycl-targets=intel_gpu_pvc ";
+    Props["compiler_flags"] += " -fdebug-info-for-profiling -gline-tables-only "; // Debug flags for profiling
   }
 }
 
