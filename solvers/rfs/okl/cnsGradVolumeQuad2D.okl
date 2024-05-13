@@ -35,6 +35,7 @@ SOFTWARE.
     @shared dfloat s_DT[p_Nq][p_Nq];
     @shared dfloat s_u[p_Nq][p_Nq];
     @shared dfloat s_v[p_Nq][p_Nq];
+    @shared dfloat s_Y[p_Nq][p_Nq];
 
     for(int j=0;j<p_Nq;++j;@inner(1)){
       for(int i=0;i<p_Nq;++i;@inner(0)){
@@ -45,9 +46,11 @@ SOFTWARE.
         const dfloat r  = q[qbase + 0*p_Np];
         const dfloat ru = q[qbase + 1*p_Np];
         const dfloat rv = q[qbase + 2*p_Np];
+        const dfloat rY = q[qbase + 4*p_Np];
 
         s_u[j][i] = ru/r;
         s_v[j][i] = rv/r;
+        s_Y[j][i] = rY/r;
       }
     }
 
@@ -56,6 +59,7 @@ SOFTWARE.
       for(int i=0;i<p_Nq;++i;@inner(0)){
 
         dfloat dudr = 0, duds = 0, dvdr = 0, dvds = 0;
+        dfloat dYdr = 0, dYds = 0;
 
         for(int n=0;n<p_Nq;++n){
           const dfloat Din = s_DT[i][n];
@@ -66,6 +70,9 @@ SOFTWARE.
 
           dvdr += Din*s_v[j][n];
           dvds += Djn*s_v[n][i];
+
+          dYdr += Din*s_Y[j][n];
+          dYds += Djn*s_Y[n][i];
         }
 
         const dlong gbase = e*p_Np*p_Nvgeo + j*p_Nq + i;
@@ -79,11 +86,16 @@ SOFTWARE.
         const dfloat dvdx = rx*dvdr + sx*dvds;
         const dfloat dvdy = ry*dvdr + sy*dvds;
 
+        const dfloat dYdx = rx*dYdr + sx*dYds;
+        const dfloat dYdy = ry*dYdr + sy*dYds;
+
         const dlong sbase = e*p_Ngrads*p_Np + j*p_Nq + i;
         gradq[sbase + 0*p_Np] = dudx;
         gradq[sbase + 1*p_Np] = dudy;
         gradq[sbase + 2*p_Np] = dvdx;
         gradq[sbase + 3*p_Np] = dvdy;
+        gradq[sbase + 4*p_Np] = dYdx;
+        gradq[sbase + 5*p_Np] = dYdy;
       }
     }
   }

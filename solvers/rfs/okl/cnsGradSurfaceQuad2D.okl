@@ -44,7 +44,9 @@ void surfaceTerms(const int e,
                   dfloat s_uxflux [p_NblockS][p_Nq][p_Nq],
                   dfloat s_uyflux [p_NblockS][p_Nq][p_Nq],
                   dfloat s_vxflux [p_NblockS][p_Nq][p_Nq],
-                  dfloat s_vyflux [p_NblockS][p_Nq][p_Nq]){
+                  dfloat s_vyflux [p_NblockS][p_Nq][p_Nq],
+                  dfloat s_Yxflux [p_NblockS][p_Nq][p_Nq],
+                  dfloat s_Yyflux [p_NblockS][p_Nq][p_Nq]){
 
   const dfloat nx = sgeo[sk*p_Nsgeo+p_NXID];
   const dfloat ny = sgeo[sk*p_Nsgeo+p_NYID];
@@ -65,16 +67,20 @@ void surfaceTerms(const int e,
   const dfloat rM  = q[baseM + 0*p_Np];
   const dfloat ruM = q[baseM + 1*p_Np];
   const dfloat rvM = q[baseM + 2*p_Np];
+  const dfloat rYM = q[baseM + 4*p_Np];
 
   const dfloat uM = ruM/rM;
   const dfloat vM = rvM/rM;
+  const dfloat yM = rYM/rM;
 
   dfloat rP  = q[baseP + 0*p_Np];
   dfloat ruP = q[baseP + 1*p_Np];
   dfloat rvP = q[baseP + 2*p_Np];
+  dfloat rYP = q[baseP + 4*p_Np];
 
   dfloat uP = ruP/rP;
   dfloat vP = rvP/rP;
+  dfloat yP = rYP/rP;
 
   const int bc = EToB[face+p_Nfaces*e];
   if(bc>0) {
@@ -93,6 +99,8 @@ void surfaceTerms(const int e,
   s_uyflux[es][j][i] += sc*ny*(uP-uM);
   s_vxflux[es][j][i] += sc*nx*(vP-vM);
   s_vyflux[es][j][i] += sc*ny*(vP-vM);
+  s_Yxflux[es][j][i] += sc*nx*(yP-yM);
+  s_Yyflux[es][j][i] += sc*ny*(yP-yM);
 }
 
 
@@ -118,6 +126,8 @@ void surfaceTerms(const int e,
     @shared dfloat s_uyflux[p_NblockS][p_Nq][p_Nq];
     @shared dfloat s_vxflux[p_NblockS][p_Nq][p_Nq];
     @shared dfloat s_vyflux[p_NblockS][p_Nq][p_Nq];
+    @shared dfloat s_Yxflux[p_NblockS][p_Nq][p_Nq];
+    @shared dfloat s_Yyflux[p_NblockS][p_Nq][p_Nq];
 
     for(int es=0;es<p_NblockS;++es;@inner(1)){
       for(int i=0;i<p_Nq;++i;@inner(0)){
@@ -127,6 +137,8 @@ void surfaceTerms(const int e,
             s_uyflux[es][j][i] = 0.;
             s_vxflux[es][j][i] = 0.;
             s_vyflux[es][j][i] = 0.;
+            s_Yxflux[es][j][i] = 0.;
+            s_Yyflux[es][j][i] = 0.;
           }
       }
     }
@@ -144,12 +156,12 @@ void surfaceTerms(const int e,
           //surfaceTerms(sk0,0,i,0     );
           surfaceTerms(e, es, sk0, 0, i, 0,
                        x, y, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq,
-                       s_uxflux, s_uyflux, s_vxflux, s_vyflux);
+                       s_uxflux, s_uyflux, s_vxflux, s_vyflux, s_Yxflux, s_Yyflux);
 
           //surfaceTerms(sk2,2,i,p_Nq-1);
           surfaceTerms(e, es, sk2, 2, i, p_Nq-1,
                        x, y, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq,
-                       s_uxflux, s_uyflux, s_vxflux, s_vyflux);
+                       s_uxflux, s_uyflux, s_vxflux, s_vyflux, s_Yxflux, s_Yyflux);
 
         }
       }
@@ -167,12 +179,12 @@ void surfaceTerms(const int e,
           //surfaceTerms(sk1,1,p_Nq-1,j);
           surfaceTerms(e, es, sk1, 1, p_Nq-1, j,
                        x, y, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq,
-                       s_uxflux, s_uyflux, s_vxflux, s_vyflux);
+                       s_uxflux, s_uyflux, s_vxflux, s_vyflux, s_Yxflux, s_Yyflux);
 
           //surfaceTerms(sk3,3,0     ,j);
           surfaceTerms(e, es, sk3, 3, 0, j,
                        x, y, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq,
-                       s_uxflux, s_uyflux, s_vxflux, s_vyflux);
+                       s_uxflux, s_uyflux, s_vxflux, s_vyflux, s_Yxflux, s_Yyflux);
         }
       }
     }
@@ -189,7 +201,9 @@ void surfaceTerms(const int e,
               gradq[base+0*p_Np] += s_uxflux[es][j][i];
               gradq[base+1*p_Np] += s_uyflux[es][j][i];
               gradq[base+2*p_Np] += s_vxflux[es][j][i];
-              gradq[base+2*p_Np] += s_vyflux[es][j][i];
+              gradq[base+3*p_Np] += s_vyflux[es][j][i];
+              gradq[base+4*p_Np] += s_Yxflux[es][j][i];
+              gradq[base+5*p_Np] += s_Yyflux[es][j][i];
             }
         }
       }
