@@ -34,6 +34,7 @@ SOFTWARE.
                              const dfloat t,
                              const dfloat mu,
                              const dfloat gamma,
+                             const dfloat DiffCoeff,
                              @restrict const  dfloat *  q,
                              @restrict const  dfloat *  gradq,
                              @restrict dfloat *  rhsq){
@@ -67,7 +68,7 @@ SOFTWARE.
         const dfloat rY = q[qbase+4*p_Np];
 
         // primitive variables (velocity)
-        const dfloat u = ru/r, v = rv/r, y = rY/r;
+        const dfloat u = ru/r, v = rv/r, Y = rY/r;
         const dfloat p = (gamma-1)*(E-0.5*r*(u*u+v*v));
 
         // gradients
@@ -76,6 +77,8 @@ SOFTWARE.
         const dfloat dudy = gradq[id+1*p_Np];
         const dfloat dvdx = gradq[id+2*p_Np];
         const dfloat dvdy = gradq[id+3*p_Np];
+        const dfloat dYdx = gradq[id+4*p_Np];
+        const dfloat dYdy = gradq[id+5*p_Np];
 
         //Body force contribution
         fx = 0.0; fy = 0.0;
@@ -122,8 +125,8 @@ SOFTWARE.
 
         {
           // F4 = Jx - ruY, G4 = Jy - rvY
-          const dfloat f = -(ru*y);
-          const dfloat g = -(rv*y);
+          const dfloat f = DiffCoeff*dYdx-(ru*Y);
+          const dfloat g = DiffCoeff*dYdx-(rv*Y);
           s_F[4][j][i] = JW*(rx*f + ry*g);
           s_G[4][j][i] = JW*(sx*f + sy*g);
         }
@@ -150,7 +153,7 @@ SOFTWARE.
           rhsq3 += Din*s_F[3][j][n];
           rhsq3 += Djn*s_G[3][n][i];
           rhsq4 += Din*s_F[4][j][n];
-          rhsq4 += Djn*s_G[4][j][n];
+          rhsq4 += Djn*s_G[4][n][i];
         }
 
         const dlong base = e*p_Np*p_Nfields + j*p_Nq + i;

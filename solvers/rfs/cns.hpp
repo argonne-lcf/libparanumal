@@ -57,6 +57,7 @@ public:
 
   dfloat mu;
   dfloat gamma;
+  dfloat DiffCoeff;
 
   int cubature;
   int isothermal;

@@ -57,6 +57,7 @@ void cns_t::Setup(platform_t& _platform, mesh_t& _mesh,
 
   if (!isothermal) Nfields++; //include energy equation
   if (species) {
+    DiffCoeff = 0.0;
     Nfields = Nfields + (Nspecies - 1);
     Ngrads  = Ngrads + (Nspecies - 1)*mesh.dim;
     std::cout<<" Solving species transport equation with "<<Nspecies<<" species\n";

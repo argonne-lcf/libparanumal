@@ -113,6 +113,7 @@ void cns_t::rhsf(deviceMemory<dfloat>& o_Q, deviceMemory<dfloat>& o_RHS, const d
                  T,
                  mu,
                  gamma,
+                 DiffCoeff,
                  o_Q,
                  o_gradq,
                  o_RHS);
@@ -152,6 +153,7 @@ void cns_t::rhsf(deviceMemory<dfloat>& o_Q, deviceMemory<dfloat>& o_RHS, const d
                     T,
                     mu,
                     gamma,
+                    DiffCoeff,
                     o_Q,
                     o_gradq,
                     o_RHS);

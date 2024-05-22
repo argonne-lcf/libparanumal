@@ -103,6 +103,7 @@ void surfaceTerms(const int e,
                   const dfloat time,
                   const dfloat mu,
                   const dfloat gamma,
+                  const dfloat DiffCoeff,
                   const dfloat *sgeo,
                   const int *vmapM,
                   const int *vmapP,
@@ -144,6 +145,8 @@ void surfaceTerms(const int e,
   const dfloat dudyM = gradq[sbaseM+1*p_Np];
   const dfloat dvdxM = gradq[sbaseM+2*p_Np];
   const dfloat dvdyM = gradq[sbaseM+3*p_Np];
+  const dfloat dYdxM = gradq[sbaseM+4*p_Np];
+  const dfloat dYdyM = gradq[sbaseM+5*p_Np];
 
   dfloat rP  = q[qbaseP + 0*p_Np];
   dfloat ruP = q[qbaseP + 1*p_Np];
@@ -155,6 +158,8 @@ void surfaceTerms(const int e,
   dfloat dudyP = gradq[sbaseP+1*p_Np];
   dfloat dvdxP = gradq[sbaseP+2*p_Np];
   dfloat dvdyP = gradq[sbaseP+3*p_Np];
+  dfloat dYdxP = gradq[sbaseP+4*p_Np];
+  dfloat dYdyP = gradq[sbaseP+5*p_Np];
 
   const dfloat uM = ruM/rM;
   const dfloat vM = rvM/rM;
@@ -171,8 +176,8 @@ void surfaceTerms(const int e,
   if(bc>0){
     cnsBoundaryConditions2D(bc, gamma, mu,
                             time, x[idM], y[idM], nx, ny,
-                            rM, uM, vM, pM, dudxM, dudyM, dvdxM, dvdyM,
-                            &rP, &uP, &vP, &pP, &dudxP, &dudyP, &dvdxP, &dvdyP);
+                            rM, uM, vM, pM, dudxM, dudyM, dvdxM, dvdyM, dYdxM, dYdyM,
+                            &rP, &uP, &vP, &pP, &dudxP, &dudyP, &dvdxP, &dvdyP, &dYdxP, &dYdyP);
   }
 
   dfloat rflux, ruflux, rvflux, Eflux, rYflux;
@@ -183,17 +188,21 @@ void surfaceTerms(const int e,
   const dfloat T22M = mu*(2.0*dvdyM - 2.0*(dudxM+dvdyM)/3.0);
   const dfloat T31M = uM*T11M + vM*T12M;
   const dfloat T32M = uM*T12M + vM*T22M;
+  const dfloat J11M = DiffCoeff*dYdxM;
+  const dfloat J12M = DiffCoeff*dYdyM;
 
   const dfloat T11P = mu*(2.0*dudxP - 2.0*(dudxP+dvdyP)/3.0);
   const dfloat T12P = mu*(dudyP+dvdxP);
   const dfloat T22P = mu*(2.0*dvdyP - 2.0*(dudxP+dvdyP)/3.0);
   const dfloat T31P = uP*T11P + vP*T12P;
   const dfloat T32P = uP*T12P + vP*T22P;
+  const dfloat J11P = DiffCoeff*dYdxP;
+  const dfloat J12P = DiffCoeff*dYdyP;
 
   ruflux -= 0.5*(nx*(T11P+T11M) + ny*(T12P+T12M));
   rvflux -= 0.5*(nx*(T12P+T12M) + ny*(T22P+T22M));
   Eflux  -= 0.5*(nx*(T31P+T31M) + ny*(T32P+T32M));
-  rYflux -= 0.0;
+  rYflux -= 0.5*(nx*(J11P+J11M) + ny*(J12P+J12M));
 
   const dfloat sc = invWJ*sJ;
   s_rflux [es][j][i] += sc*(-rflux);
@@ -216,6 +225,7 @@ void surfaceTerms(const int e,
                              const dfloat time,
                              const dfloat mu,
                              const dfloat gamma,
+                             const dfloat DiffCoeff,
                              @restrict const  dfloat *  q,
                              @restrict const  dfloat *  gradq,
                              @restrict dfloat *  rhsq){
@@ -255,12 +265,12 @@ void surfaceTerms(const int e,
 
           // surfaceTerms(sk0,0,i,0     );
           surfaceTerms(e, es, sk0, 0, i, 0,
-                       x, y, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq,
+                       x, y, time, mu, gamma, DiffCoeff, sgeo, vmapM, vmapP, EToB, q, gradq,
                        s_rflux, s_ruflux, s_rvflux, s_Eflux, s_rYflux);
 
           //surfaceTerms(sk2,2,i,p_Nq-1);
           surfaceTerms(e, es, sk2, 2, i, p_Nq-1,
-                       x, y, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq,
+                       x, y, time, mu, gamma, DiffCoeff, sgeo, vmapM, vmapP, EToB, q, gradq,
                        s_rflux, s_ruflux, s_rvflux, s_Eflux, s_rYflux);
         }
       }
@@ -277,12 +287,12 @@ void surfaceTerms(const int e,
 
           //surfaceTerms(sk1,1,p_Nq-1,j);
           surfaceTerms(e, es, sk1, 1, p_Nq-1, j,
-                       x, y, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq,
+                       x, y, time, mu, gamma, DiffCoeff, sgeo, vmapM, vmapP, EToB, q, gradq,
                        s_rflux, s_ruflux, s_rvflux, s_Eflux, s_rYflux);
 
           //surfaceTerms(sk3,3,0     ,j);
           surfaceTerms(e, es, sk3, 3, 0, j,
-                       x, y, time, mu, gamma, sgeo, vmapM, vmapP, EToB, q, gradq,
+                       x, y, time, mu, gamma, DiffCoeff, sgeo, vmapM, vmapP, EToB, q, gradq,
                        s_rflux, s_ruflux, s_rvflux, s_Eflux, s_rYflux);
         }
       }
