@@ -111,13 +111,13 @@ SOFTWARE.
           dfloat vP = vM;
           dfloat pP = pM;
 
-          dfloat dudxP, dudyP, dvdxP, dvdyP;
+          dfloat dudxP, dudyP, dvdxP, dvdyP, dYdxP, dYdyP;
 
           //get boundary value
           cnsBoundaryConditions2D(bc, gamma, mu,
                                   time, x[idM], y[idM], nx, ny,
-                                  rM, uM, vM, pM, 0.0, 0.0, 0.0, 0.0,
-                                  &rP, &uP, &vP, &pP, &dudxP, &dudyP, &dvdxP, &dvdyP);
+                                  rM, uM, vM, pM, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                  &rP, &uP, &vP, &pP, &dudxP, &dudyP, &dvdxP, &dvdyP, &dYdxP, &dYdyP);
 
           //determine max wavespeed from boundary value
           const dfloat U = sqrt(uP*uP+vP*vP);
@@ -283,13 +283,13 @@ SOFTWARE.
           dfloat vP = vM;
           dfloat pP = pM;
 
-          dfloat dudxP, dudyP, dvdxP, dvdyP;
+          dfloat dudxP, dudyP, dvdxP, dvdyP, dYdxP, dYdyP;
 
           //get boundary value
           cnsBoundaryConditions2D(bc, gamma, mu,
                                   time, x[idM], y[idM], nx, ny,
-                                  rM, uM, vM, pM, 0.0, 0.0, 0.0, 0.0,
-                                  &rP, &uP, &vP, &pP, &dudxP, &dudyP, &dvdxP, &dvdyP);
+                                  rM, uM, vM, pM, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                  &rP, &uP, &vP, &pP, &dudxP, &dudyP, &dvdxP, &dvdyP, &dYdxP, &dYdyP);
 
           //determine max wavespeed from boundary value
           const dfloat U = sqrt(uP*uP+vP*vP);

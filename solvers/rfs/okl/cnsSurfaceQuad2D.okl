@@ -33,10 +33,12 @@ void upwindRoeAveraged(const dfloat nx,
                        const dfloat uM,
                        const dfloat vM,
                        const dfloat pM,
+                       const dfloat yM,
                        const dfloat rP,
                        const dfloat uP,
                        const dfloat vP,
                        const dfloat pP,
+                       const dfloat yP,
                        dfloat *rflux,
                        dfloat *ruflux,
                        dfloat *rvflux,
@@ -56,6 +58,7 @@ void upwindRoeAveraged(const dfloat nx,
   const dfloat u = (sqrtrM*uM + sqrtrP*uP)/(sqrtrM + sqrtrP);
   const dfloat v = (sqrtrM*vM + sqrtrP*vP)/(sqrtrM + sqrtrP);
   const dfloat H = (sqrtrM*HM + sqrtrP*HP)/(sqrtrM + sqrtrP);
+  const dfloat Y = (sqrtrM*yM + sqrtrP*yP)/(sqrtrM + sqrtrP);
 
   const dfloat c2 = (gamma-1)*(H-0.5*(u*u+v*v));
   const dfloat c = sqrt(c2);
@@ -71,6 +74,7 @@ void upwindRoeAveraged(const dfloat nx,
   const dfloat du = uP-uM;
   const dfloat dv = vP-vM;
   const dfloat dq = qP-qM;
+  const dfloat dY = yP-yM;
 
   const dfloat W1 = fabs(q-c) * 0.5*(dp-r*c*dq)/(c2);
   const dfloat W2 = fabs(q  ) * r;
@@ -82,13 +86,14 @@ void upwindRoeAveraged(const dfloat nx,
   *ruflux = 0.5*((rP*uP*qP+nx*pP) + (rM*uM*qM+nx*pM));
   *rvflux = 0.5*((rP*vP*qP+ny*pP) + (rM*vM*qM+ny*pM));
   *Eflux  = 0.5*((qP*(EP+pP)    ) + (qM*(EM+pM)    ));
+  *rYflux = 0.5*((rP*yP*qP      ) + (rM*yM*qM      ));
 
   // Roe flux
   *rflux  -= 0.5*(W1*1.0      + W2*0.0              + W3*1.0      + W4*1.0          );
   *ruflux -= 0.5*(W1*(u-nx*c) + W2*(du-nx*dq)       + W3*(u+nx*c) + W4*u            );
   *rvflux -= 0.5*(W1*(v-ny*c) + W2*(dv-ny*dq)       + W3*(v+ny*c) + W4*v            );
   *Eflux  -= 0.5*(W1*(H- q*c) + W2*(u*du+v*dv-q*dq) + W3*(H+ q*c) + W4*0.5*(u*u+v*v));
-  *rYflux -= 0.0;
+  *rYflux -= 0.5*(W1*Y        + W2*0.0              + W3*Y        + W4*Y            );
 }
 
 
@@ -181,7 +186,7 @@ void surfaceTerms(const int e,
   }
 
   dfloat rflux, ruflux, rvflux, Eflux, rYflux;
-  upwindRoeAveraged(nx, ny, gamma, rM, uM, vM, pM, rP, uP, vP, pP, &rflux, &ruflux, &rvflux, &Eflux, &rYflux);
+  upwindRoeAveraged(nx, ny, gamma, rM, uM, vM, pM, yM, rP, uP, vP, pP, yP, &rflux, &ruflux, &rvflux, &Eflux, &rYflux);
 
   const dfloat T11M = mu*(2.0*dudxM - 2.0*(dudxM+dvdyM)/3.0);
   const dfloat T12M = mu*(dudyM+dvdxM);

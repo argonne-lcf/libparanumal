@@ -88,10 +88,11 @@ void surfaceTerms(const int e,
     dfloat pP = gamma*gamma*rP;
     dfloat dudx = 0.f, dudy = 0.f; //fake these values
     dfloat dvdx = 0.f, dvdy = 0.f; //fake these values
+    dfloat dYdx = 0.f, dYdy = 0.f; //fake these values
     cnsBoundaryConditions2D(bc, gamma, mu,
                             time, x[idM], y[idM], nx, ny,
-                            rM, uM, vM, pM, 0., 0., 0., 0.,
-                            &rP, &uP, &vP, &pP, &dudx, &dudy, &dvdx, &dvdy);
+                            rM, uM, vM, pM, 0., 0., 0., 0., 0., 0.,
+                            &rP, &uP, &vP, &pP, &dudx, &dudy, &dvdx, &dvdy, &dYdx, &dYdy);
   }
 
   const dfloat sc = 0.5f*invWJ * sJ;

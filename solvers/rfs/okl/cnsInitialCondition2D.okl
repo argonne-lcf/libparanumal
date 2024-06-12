@@ -51,6 +51,7 @@ SOFTWARE.
       q[qbase+1*p_Np] = r*u;
       q[qbase+2*p_Np] = r*v;
       q[qbase+3*p_Np] = p/(gamma-1) + 0.5*r*(u*u+v*v);
+      #pragma unroll
       for(int l=4;l<p_Nspecies+3;++l) {
         q[qbase+l*p_Np] = Ysp[l-4];
       }
